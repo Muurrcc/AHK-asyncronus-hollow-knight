@@ -1,22 +1,23 @@
 <#
- Compila el instalador MSI de Asyncronus.
+ Builds the Asyncronus MSI installer.
 
- Requisitos: .NET SDK 8+ y WiX v4+ (dotnet tool install --global wix --version 6.0.2; ver README).
- NO se copia ningun fichero del juego al repositorio: los DLL de entrada se pasan por parametro.
+ Requirements: .NET SDK 8+ and WiX v4+ (dotnet tool install --global wix --version 6.0.2; see README).
+ No game file is ever copied into the repository: the input DLLs are passed as parameters.
 
- Ejemplo:
-   .\build.ps1 -VanillaAssembly E:\HKMP-Enemies\vanilla-managed\Assembly-CSharp.dll `
-               -ApiDir E:\HKMP-Enemies\HKMP-MultiSincro\api-precompilada `
-               -ModDir E:\Asyncronus\dist -Version 1.0.0
+ Example:
+   .\build.ps1 -VanillaAssembly <path>\Assembly-CSharp.dll `
+               -ApiDir <path>\api-compiled `
+               -ModDir ..\dist -Version 1.1.0
 
- Parametros:
-   -VanillaAssembly  Assembly-CSharp.dll ORIGINAL de la build soportada (hash comprobado).
-   -ApiDir           Carpeta con la Modding API ya compilada (Assembly-CSharp.dll parcheado, Mono.Cecil, MonoMod.*, unityscenerepacker, MMHOOK_*).
-                     De ahi solo se usa: el Assembly-CSharp.dll (para generar el delta), 4 librerias de terceros y el TAMANO de los MMHOOK (control de calidad).
-   -ModDir           Carpeta con HKMP.dll y sus dependencias (*.dll). Por defecto ..\dist (solo se cogen los .dll).
-   -Version          Version del MSI (x.y.z).
-   -OutDir           Destino del MSI. Por defecto ..\dist.
-   -SkipDelta        No regenera el .patch (usa el existente en patches\).
+ Parameters:
+   -VanillaAssembly  ORIGINAL Assembly-CSharp.dll of the supported game build (hash is checked).
+   -ApiDir           Folder with the already compiled Modding API (patched Assembly-CSharp.dll, Mono.Cecil, MonoMod.*,
+                     unityscenerepacker, MMHOOK_*). Only used for: Assembly-CSharp.dll (to generate the delta),
+                     4 third-party libraries and the SIZE of the MMHOOK files (sanity check).
+   -ModDir           Folder with HKMP.dll and its dependencies (*.dll). Defaults to ..\dist (only .dll files are taken).
+   -Version          MSI version (x.y.z).
+   -OutDir           Where the MSI is written. Defaults to ..\dist.
+   -SkipDelta        Do not regenerate the .patch (reuse the one in patches\).
 #>
 param(
     [Parameter(Mandatory)][string]$VanillaAssembly,

@@ -6,7 +6,7 @@ using System.Windows.Forms;
 namespace Asyncronus.Setup
 {
     /// <summary>
-    /// CLI del instalador (el MSI usa la misma logica desde Asyncronus.CA.dll).
+    /// Installer CLI (the MSI uses the same logic through Asyncronus.CA.dll).
     ///   AsyncronusSetup install   -Payload DIR [-GameDir DIR]
     ///   AsyncronusSetup uninstall -Payload DIR  -GameDir DIR
     ///   AsyncronusSetup status    -Payload DIR [-GameDir DIR]

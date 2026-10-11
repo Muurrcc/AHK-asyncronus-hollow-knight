@@ -15,7 +15,7 @@ namespace Asyncronus.Setup
 
         public static string ManagedOf(string gameDir) { return Path.Combine(gameDir, "hollow_knight_Data", "Managed"); }
 
-        /// <summary>Acepta la carpeta del juego, hollow_knight_Data o Managed y devuelve la carpeta del juego (o null).</summary>
+        /// <summary>Accepts the game folder, hollow_knight_Data or Managed and returns the game folder (or null).</summary>
         public static string Normalize(string dir)
         {
             if (string.IsNullOrWhiteSpace(dir)) return null;
@@ -93,7 +93,7 @@ namespace Asyncronus.Setup
             return null;
         }
 
-        // ---- proceso del juego (comprobado por ruta de imagen, para no confundirse con otra copia) ----
+        // ---- game process (checked by image path, so another copy of the game is not mistaken for it) ----
         [DllImport("kernel32.dll", SetLastError = true)] static extern IntPtr OpenProcess(uint access, bool inherit, int pid);
         [DllImport("kernel32.dll", SetLastError = true)] static extern bool CloseHandle(IntPtr h);
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]

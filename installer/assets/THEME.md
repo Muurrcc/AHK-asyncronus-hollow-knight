@@ -1,62 +1,38 @@
-# Asyncronus - tema visual del instalador
+# Asyncronus — installer visual theme
 
-Direccion: oscuridad silenciosa, niebla y hueso. Sobrio, mucho vacio, un unico punto de luz (el "destello de alma"). Sin arte ni logos de Team Cherry: la mascara es una forma propia (ovoide con dos puntas, ojos en ranura) y su eco azul desfasado simboliza el segundo jugador / asincronia.
+Direction: silent darkness, mist and bone. Sober, lots of empty space, a single point of light (the "soul glint"). No Team Cherry artwork or logos: the mask is an original shape (an oval with two uneven points and slanted slit eyes) and its offset blue echo stands for the second player / asynchrony.
 
-## Paleta
-| Rol | Hex | Uso |
-|---|---|---|
-| Vacio | `#06080C` | fondo mas profundo, ojos de la mascara |
-| Cueva | `#0E141D` | fondo base oscuro |
-| Niebla | `#22303E` | halos, paneles secundarios |
-| Azul pizarra palido | `#8FA3B5` | bordes, eco, texto secundario, enlaces |
-| Blanco hueso | `#E8E2D0` | mascara, titulos sobre oscuro |
-| Papel | `#ECE8DC` | fondo claro de dialogos (texto por defecto legible) |
-| Alma | `#CFE8F5` | unico acento: destellos, foco, barra de progreso |
-| Tinta | `#344252` | texto sobre fondo claro |
+## Palette
 
-Contraste: hueso sobre vacio ~14:1; tinta `#344252` sobre papel ~8:1; `#8FA3B5` solo para texto secundario sobre oscuro (~7:1).
+| Role | Hex |
+|---|---|
+| Mist | `#8FA3B5` |
+| Paper | `#ECE8DC` |
+| Soul glint (only accent) | `#CFE8F5` |
+| Ink (titles) | `#344252` |
 
-## Variantes de imagenes (WixUI)
-- `banner.bmp` / `dialog.bmp`: **claras** (fondo papel). Funcionan con el texto negro por defecto de WixUI sin tocar estilos. Recomendadas por defecto. En `dialog.bmp` el panel izquierdo (164 px) es oscuro con la mascara; el resto es papel.
-- `banner-dark.bmp` / `dialog-dark.bmp`: totalmente oscuras. Solo si el integrador usa un tema/estilos con texto hueso `#E8E2D0` (UI personalizada o WixUI con dialogos propios).
-- Variables: `WixUIBannerBmp` = banner.bmp, `WixUIDialogBmp` = dialog.bmp. Icono: `asyncronus.ico` (16-256 px), PNG de referencia `asyncronus-256.png`.
-- El texto de WixUI se superpone a la izquierda del banner: la zona izquierda esta despejada; la mascara vive en el extremo derecho.
+Contrast on Paper: body text ~14:1, Ink ~8:1, Mist ~7:1.
 
-## Tipografia (incluida en Windows)
-1. **Constantia** (preferida: serif romana de buen contraste, cercana a la inscripcion tipo Trajan en tono sobrio)
+## Images (WixUI)
+
+- `banner.bmp` (493×58, 24-bit): light banner; the mask sits at the far right, the left is clear for WixUI's text.
+- `dialog.bmp` (493×312, 24-bit): 164 px dark left panel with stalactites, mist, light motes and the mask; the rest is paper.
+- `banner-dark.bmp` / `dialog-dark.bmp`: fully dark variants. Only useful with a custom UI whose text is bone-colored (`#E8E2D0`). WixUI draws black text, so the **light** variants are the ones in use.
+- WiX variables: `WixUIBannerBmp` = banner.bmp, `WixUIDialogBmp` = dialog.bmp.
+- Icon: `asyncronus.ico` (16–256 px), reference PNG `asyncronus-256.png`.
+
+## Typography (ships with Windows)
+
+1. **Constantia** (preferred: Roman serif with good contrast, close to the Trajan-like inscription feel, in a sober tone)
 2. **Palatino Linotype**
-3. **Georgia** (fallback universal)
-- Titulos: serif, MAYUSCULAS pequenas con espaciado amplio (si el motor lo permite) o capitalizada normal.
-- Cuerpo/UI: Segoe UI 9-10 pt (legibilidad en listas, rutas y errores). No mezclar mas de dos familias.
+3. **Georgia** (universal fallback)
 
-## Textos propuestos (es-ES)
-**Bienvenida**
-- Titulo: Asyncronus
-- Cuerpo: Este asistente instalara Asyncronus, el modo multijugador para Hollow Knight. Cierra el juego antes de continuar.
+Titles: serif. Body/UI: Segoe UI 9–10 pt (readability in lists, paths and errors). Never mix more than two families.
 
-**Licencia**
-- Titulo: Condiciones de uso
-- Cuerpo: Lee y acepta las condiciones para continuar. Asyncronus es un proyecto de fans y no esta afiliado a Team Cherry.
-- Casilla: Acepto las condiciones
+## Copy
 
-**Carpeta**
-- Titulo: Carpeta de instalacion
-- Cuerpo: Elige la carpeta de Hollow Knight donde se colocara el mod.
-- Error: No se encontro Hollow Knight en esa carpeta.
+Short sentences, second person, no exclamation marks, nothing copied from the game. The strings live in `wix/Asyncronus.es-ES.wxl` (Spanish).
 
-**Progreso**
-- Titulo: Instalando
-- Cuerpo: Colocando los archivos del mod. Puede tardar un momento.
-- Estados: Copiando archivos... / Registrando... / Casi listo.
+## Regenerating
 
-**Final**
-- Titulo: Instalacion completada
-- Cuerpo: Asyncronus esta listo. Inicia Hollow Knight para jugar.
-- Casilla: Abrir Hollow Knight al cerrar
-- Error: La instalacion no pudo completarse. Cierra el juego e intentalo de nuevo.
-
-## Reglas de tono
-Frases cortas, segunda persona (tu), sin signos de exclamacion, sin jerga tecnica ni humor. Una accion por pantalla.
-
-## Regenerar
-`python make-assets.py` (Pillow) regenera todo; `python verify-assets.py` valida 24-bit, 493x58, 493x312 y tamanos del .ico.
+`make-assets.py` generates everything (Python + Pillow, fixed seeds); `verify-assets.py` checks sizes and formats (24-bit BMP, multi-size ICO).

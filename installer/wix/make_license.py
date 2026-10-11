@@ -1,4 +1,4 @@
-# Genera license.rtf (aviso mostrado en el instalador) a partir del texto de abajo.
+# Generates license.rtf (notice shown in the installer, Spanish UI text) from the text below.
 text = """Este asistente instalará Asyncronus, el modo multijugador para Hollow Knight. Cierra el juego antes de continuar.
 
 Lee y acepta las condiciones para continuar. Asyncronus es un proyecto de fans y no está afiliado a Team Cherry.

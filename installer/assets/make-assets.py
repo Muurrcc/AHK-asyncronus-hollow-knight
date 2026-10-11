@@ -1,5 +1,5 @@
-"""Genera los recursos graficos del instalador Asyncronus (Pillow). Uso: python make-assets.py
-Formas originales (no usa arte de Team Cherry). Reproducible: semillas fijas."""
+"""Generates the Asyncronus installer graphics (Pillow). Usage: python make-assets.py
+Original shapes (no Team Cherry artwork). Reproducible: fixed seeds."""
 import math, random, os
 from PIL import Image, ImageDraw, ImageFilter, ImageChops
 

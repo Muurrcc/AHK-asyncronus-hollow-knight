@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  MSI de Asyncronus (WiX v6). Variables (build.ps1 -> wix build -d ...):
-    ProductVersion, PayloadDir (carpeta con payload.ini, patch, mod\, api\, tools\), CaDll (Asyncronus.CA.CA.dll),
-    VanillaSha256, PatchedSha256.
+  Asyncronus MSI (WiX v6). Variables (build.ps1 -> wix build -d ...): ProductVersion, PayloadDir (folder with payload.ini,
+  patch, mod\, api\, tools\), CaDll (Asyncronus.CA.CA.dll), VanillaSha256, PatchedSha256.
 
-  Decision de alcance: instalacion POR USUARIO (sin UAC). Las carpetas de Steam son escribibles por el usuario
-  (Steam las crea asi para actualizar juegos sin ser administrador), asi que el MSI no necesita elevacion; el
-  payload va a %LocalAppData%\Programs\Asyncronus y la accion personalizada escribe en la carpeta del juego.
+  Scope decision: PER-USER install (no UAC). Steam game folders are writable by the user (Steam creates them that way so
+  it can update games without administrator rights), so the MSI needs no elevation; the payload goes to
+  %LocalAppData%\Programs\Asyncronus and the custom action writes into the game folder.
 -->
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
   <Package Name="Asyncronus (Hollow Knight multijugador)"
@@ -35,10 +34,10 @@
     <Property Id="PATCHED_SHA256" Value="$(PatchedSha256)" />
     <!-- "Desinstalar Asyncronus" (menu Inicio) pasa CONFIRMUNINSTALL=1 para pedir una confirmacion antes de restaurar. -->
     <Property Id="CONFIRMUNINSTALL" Secure="yes" />
-    <!-- Mantenimiento: al volver a ejecutar el MSI ya instalado, WixUI_Minimal muestra Reparar / Quitar (en espanol por -culture es-ES). -->
+    <!-- Maintenance: re-running the installed MSI shows Repair / Remove (Spanish via -culture es-ES). -->
 
-    <!-- UI minima en espanol -->
-    <!-- Tema (assets\THEME.md): variantes CLARAS de los graficos, porque el texto de WixUI es negro. Textos en Asyncronus.es-ES.wxl. -->
+    <!-- Minimal UI (Spanish strings) -->
+    <!-- Theme (assets\THEME.md): LIGHT variants of the graphics, because WixUI text is black. Strings live in Asyncronus.es-ES.wxl. -->
     <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
     <WixVariable Id="WixUIBannerBmp" Value="..\assets\banner.bmp" />
     <WixVariable Id="WixUIDialogBmp" Value="..\assets\dialog.bmp" />
@@ -103,14 +102,14 @@
       <Files Include="$(PayloadDir)\**" />
     </ComponentGroup>
 
-    <!-- Recuerda la carpeta del juego para desinstalar/actualizar sin volver a buscarla. -->
+    <!-- Remembers the game folder so uninstall/update do not have to search for it again. -->
     <Component Id="StateRegistry" Directory="INSTALLFOLDER">
       <RegistryValue Root="HKCU" Key="Software\Asyncronus\Mod" Name="GameDir" Type="string" Value="[GAMEDIR]" KeyPath="yes" />
       <RegistryValue Root="HKCU" Key="Software\Asyncronus\Mod" Name="Version" Type="string" Value="$(ProductVersion)" />
       <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
     </Component>
 
-    <!-- Acceso directo del menu Inicio: lanza la misma desinstalacion del MSI (RemoveMod restaura el backup; no toca otros mods ni partidas). -->
+    <!-- Start menu shortcut: runs the same MSI uninstall (RemoveMod restores the backup; other mods are never touched). -->
     <Component Id="UninstallShortcut" Directory="AppMenuDir">
       <Shortcut Id="UninstallShortcutLnk" Name="Desinstalar Asyncronus" Icon="asyncronus.ico"
                 Description="Quita Asyncronus y restaura los ficheros originales de Hollow Knight"

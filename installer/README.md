@@ -1,37 +1,45 @@
-# Instalador de Asyncronus (MSI)
+# Asyncronus installer (MSI)
 
-Instala **y actualiza** el mod multijugador (HKMP + Modding API para Unity 6) en Hollow Knight de Steam (build 1.5.12459).
-Para el usuario: doble clic en `Asyncronus-X.Y.Z.msi`, "Instalar". Para actualizar: ejecutar el MSI nuevo. Para quitarlo: *Configuracion > Aplicaciones > Asyncronus (Hollow Knight multijugador)*.
+Installs **and updates** the multiplayer mod (HKMP + Unity 6 Modding API) on Steam's Hollow Knight (build 1.5.12459).
 
-## Que hace
-1. Busca el juego (registro de Steam + `libraryfolders.vdf` + `appmanifest_367520.acf`); si no lo encuentra, pide la carpeta. `GAMEDIR="ruta"` en `msiexec` lo fuerza.
-2. Comprueba que Hollow Knight esta cerrado.
-3. Mira el hash de `Assembly-CSharp.dll`: original -> aplica el delta; ya parcheado -> solo actualiza el mod; otro -> explica como "Verificar integridad" en Steam y aborta sin tocar nada.
-4. Copia de seguridad solo de lo que sobrescribe en `hollow_knight_Data\Managed-vanilla-backup` (+ `asyncronus-backup.txt`, el registro de lo cambiado).
-5. Copia la API y el mod a `Managed\Mods\Asyncronus` (HKMP.dll + dependencias). Si hay una `Mods\HKMP` antigua del mismo mod, la aparta a `Managed-vanilla-backup\Mods-HKMP-anterior`.
-6. Desinstalar/actualizar: restaura el backup, borra lo que anadio y su carpeta de mod. **Nunca** toca otros mods ni partidas.
+- **Users:** double-click `Asyncronus-X.Y.Z.msi` and press *Install*. To update, run the newer MSI. To remove: *Settings → Apps → Asyncronus*, or the Start menu shortcut.
+- The installer UI is in Spanish (`wix/Asyncronus.es-ES.wxl`).
 
-## Decisiones
-* **Por usuario, sin UAC.** Las carpetas de Steam son escribibles por el usuario. Si el juego esta en una carpeta protegida, el instalador lo dice y hay que lanzarlo desde una consola de administrador (`msiexec /i ...`).
-* **MMHOOK_\* se generan en el PC del usuario** con MonoMod HookGen 21.4.29.1 (mismos pasos que el build de la Modding API: PrePatcher + HookGen + `--mmhook`). No se distribuyen: derivan del codigo del juego y asi ni el repo ni el MSI llevan nada de el. Se comprobo que el resultado es identico al compilado de referencia salvo 18 bytes (marca de tiempo/MVID); coste ~5 s.
-* **Assembly-CSharp.dll**: solo se distribuye un delta (bsdiff propio, `patches/Assembly-CSharp.vanilla-to-api.patch`). El delta exige el hash del original y verifica el hash del resultado.
-* No se incluye acceso directo al servidor dedicado (aun no hay binario del servidor).
+## What it does
 
-## Compilar
-Requisitos: .NET SDK 8+, WiX v4+ (`dotnet tool install --global wix --version 6.0.2`; WiX 7 exige aceptar la licencia OSMF, 6.x no), acceso a nuget.org la primera vez.
+1. Finds the game (Steam registry + `libraryfolders.vdf` + `appmanifest_367520.acf`); asks for the folder if it cannot. `GAMEDIR="path"` on `msiexec` forces it.
+2. Checks that Hollow Knight is closed.
+3. Checks the hash of `Assembly-CSharp.dll`: original → applies the delta; already patched → only updates the mod; anything else → explains how to *Verify integrity* in Steam and aborts without touching anything.
+4. Backs up only what it overwrites into `hollow_knight_Data\Managed-vanilla-backup` (+ `asyncronus-backup.txt`, the log of what changed).
+5. Copies the API and the mod to `Managed\Mods\Asyncronus` (HKMP.dll + dependencies). An old `Mods\HKMP` folder of this same mod is moved to `Managed-vanilla-backup\Mods-HKMP-anterior`.
+6. Uninstall/update: restores the backup, deletes what it added and its own mod folder. It **never** touches other mods or saves.
+
+## Design decisions
+
+- **Per user, no UAC.** Steam game folders are writable by the user. If the game is in a protected folder the installer says so and must be run from an elevated console.
+- **`MMHOOK_*` are generated on the user's PC** with MonoMod HookGen (same pipeline as the Modding API: PrePatcher, HookGen, `--mmhook`). A delta of those files would need a base that already derives from the game, so shipping them would not avoid anything. The result matches a normal build (the four files differ only in a timestamp/MVID, 18 bytes); generation takes a few seconds.
+- **`Assembly-CSharp.dll` is shipped as a delta** (`patches/Assembly-CSharp.vanilla-to-api.patch`, ~1 MB), applied to the user's original DLL after verifying its SHA-256. A custom bsdiff implementation with deflate, no external dependency. It is checked at build time that no 64-byte block of the original appears literally in the patch.
+- **WiX 6, not 7.** WiX 7 requires accepting the OSMF license, which is the maintainer's decision.
+
+## Building
+
+Requirements: .NET SDK 8+, WiX (`dotnet tool install --global wix --version 6.0.2`), internet access the first time (NuGet: HookGen and MonoMod).
 
 ```powershell
-.\build.ps1 -VanillaAssembly <Assembly-CSharp.dll original> `
-            -ApiDir <carpeta con la Modding API ya compilada> `
-            -ModDir <carpeta con HKMP.dll y dependencias; por defecto ..\dist> `
-            -Version 1.0.0            # -> ..\dist\Asyncronus-1.0.0.msi
+.\build.ps1 -VanillaAssembly <original Assembly-CSharp.dll> `
+            -ApiDir <folder with the compiled Modding API> `
+            -ModDir <folder with HKMP.dll and dependencies; defaults to ..\dist> `
+            -Version 1.1.0            # -> ..\dist\Asyncronus-1.1.0.msi
 ```
-`-SkipDelta` reutiliza el `.patch` existente (no hacen falta los DLL para solo recompilar el MSI... salvo `-ApiDir` para las 4 librerias de terceros y los tamanos esperados).
 
-## Estructura
-* `src/Asyncronus.Setup` - logica (`Core/`) + CLI `AsyncronusSetup.exe install|uninstall|status|diff|apply` (pruebas y build).
-* `src/Asyncronus.CA` - acciones personalizadas del MSI (WiX DTF, .NET Framework 4.8; comparte el codigo de `Core/`).
-* `src/PrePatcher` - PrePatcher de la Modding API (MIT), sin cambios.
-* `wix/` - `Asyncronus.wxs`, aviso (`license.rtf`, generado con `make_license.py`).
-* `THIRD-PARTY-NOTICES.md` - licencias de terceros.
-* `wix/Asyncronus.es-ES.wxl` - textos de las pantallas (sobreescriben WixUI; `build.ps1` lo pasa con `-loc`). Imagenes e icono: `assets/` (variantes claras; ver `assets/THEME.md`).
+`-SkipDelta` reuses the existing `.patch` (the DLLs are still needed through `-ApiDir` for the 4 third-party libraries and the expected sizes). The compiled Modding API comes from [leesiuuuu/HK-Modding-API](https://github.com/leesiuuuu/HK-Modding-API) (commit `c6d6079`, branch `unity6-support`); see [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md).
+
+## Layout
+
+- `src/Asyncronus.Setup` — logic (`Core/`) + CLI `AsyncronusSetup.exe install|uninstall|status|diff|apply` (tests and build).
+- `src/Asyncronus.CA` — MSI custom actions (WiX DTF, .NET Framework 4.8; shares the `Core/` code).
+- `src/PrePatcher` — the Modding API's PrePatcher (MIT), unchanged.
+- `wix/` — `Asyncronus.wxs`, notice text (`license.rtf`, generated by `make_license.py`), `Asyncronus.es-ES.wxl` (dialog strings overriding WixUI; `build.ps1` passes it with `-loc`).
+- `assets/` — images and icon (light variants; see `assets/THEME.md`).
+- `patches/` — the binary delta.
+- `THIRD-PARTY-NOTICES.md` — third-party licenses.

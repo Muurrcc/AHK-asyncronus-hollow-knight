@@ -1,5 +1,5 @@
 // Delta binario (algoritmo bsdiff de Colin Percival, BSD-2; reimplementado aqui) con formato propio "ASYNPAT1".
-// Crear: solo se usa en build.ps1. Aplicar: lo usa el instalador en el PC del usuario.
+// Create: only used by build.ps1. Apply: used by the installer on the end user's PC.
 // Formato: magic(8) | newSize(i64) | sha256(old)(32) | sha256(new)(32) | 3 bloques [rawLen i64][compLen i64][deflate]: ctrl, diff, extra
 using System;
 using System.IO;

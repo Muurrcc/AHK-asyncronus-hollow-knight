@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Asyncronus.Setup
 {
-    /// <summary>Error con un mensaje ya redactado para el usuario final.</summary>
+    /// <summary>Error with a message already written for the end user.</summary>
     public class SetupException : Exception { public SetupException(string m) : base(m) { } }
 
     public enum AssemblyState { Missing, Vanilla, Patched, Other }
@@ -100,7 +100,7 @@ namespace Asyncronus.Setup
             log("Estado de Assembly-CSharp.dll: " + state);
             if (state == AssemblyState.Other) throw new SetupException(OtherAssemblyMessage);
 
-            // Carpeta de trabajo en %TEMP%: todo lo costoso/arriesgado se hace aqui ANTES de tocar el juego.
+            // Working folder in %TEMP%: everything costly or risky happens here BEFORE the game is touched.
             var work = Path.Combine(Path.GetTempPath(), "Asyncronus-" + Guid.NewGuid().ToString("N").Substring(0, 8));
             Directory.CreateDirectory(work);
             try
@@ -138,7 +138,7 @@ namespace Asyncronus.Setup
                     foreach (var kv in hooks) plan.Add(kv);
                 }
 
-                // ---- a partir de aqui se modifica el juego ----
+                // ---- from here on the game is modified ----
                 Directory.CreateDirectory(backup);
                 var man = Manifest.Load(manifestPath);
                 // Copia vieja (instalar.ps1): copia completa de Managed sin manifiesto.
@@ -208,7 +208,7 @@ namespace Asyncronus.Setup
             }
             var target = Path.Combine(mods, ModFolderName);
             Directory.CreateDirectory(target);
-            // sustituye el contenido de NUESTRA carpeta (elimina ficheros de versiones anteriores)
+            // replaces the contents of OUR folder (removes files from previous versions)
             foreach (var f in Directory.GetFiles(target)) File.Delete(f);
             foreach (var f in Directory.GetFiles(payload.ModDir))
             {
@@ -309,7 +309,7 @@ namespace Asyncronus.Setup
             foreach (var e in man.Entries)
                 if (e.Kind == "K") { NotRestored.Add(e.Name); log("AVISO: " + e.Name + " no se pudo restaurar (no habia copia original). Usa Verificar integridad en Steam para dejarlo como el original."); }
 
-            // Nuestra carpeta de mod (solo esa).
+            // Our mod folder (only that one).
             var modDir = Path.Combine(managed, "Mods", ModFolderName);
             if (Directory.Exists(modDir)) { log("Quitando Mods\\" + ModFolderName); Directory.Delete(modDir, true); }
             var modsDir = Path.Combine(managed, "Mods");

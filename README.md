@@ -1,47 +1,161 @@
-# Asyncronus — Hollow Knight Co-op
+<div align="center">
 
-**A**lliance of **S**ouls, **Y**ours and **N**eighbours **C**onnecting **R**emotely, **O**nline, **N**ail-bearers **U**nited, **S**eamlessly.
+<img src="docs/icon.png" alt="AHK icon" width="128">
 
-Multijugador para **Hollow Knight** (Steam, build **1.5.12459 / Unity 6**) basado en [HKMP](https://github.com/Extremelyd1/HKMP), con:
+# AHK — Asyncronus Hollow Knight
 
-- **Enemigos sincronizados**: si un jugador golpea o mata a un enemigo, el otro lo ve. Vida, alma y amuletos son por jugador; el progreso del mundo es compartido.
-- **Jugar por los servidores de Steam con un código**: el anfitrión comparte un código corto (`XXXX-XXXX`) y los amigos se unen sin abrir puertos ni usar VPN. Contraseña opcional.
-- **Instalador `.msi`** que instala y actualiza, y se desinstala desde *Agregar o quitar programas* o desde el menú Inicio.
-- **Convive con otros mods**: solo añade `Managed\Mods\Asyncronus`; no toca ni mueve otros mods ni tus partidas.
+**Co-op for Hollow Knight with synced enemies, join-by-code over Steam and a one-click installer.**<br>
+Built on [HKMP](https://github.com/Extremelyd1/HKMP) · Hollow Knight 1.5.12459 (Unity 6) · Windows.
 
-> Proyecto de fans. No está afiliado ni respaldado por Team Cherry. Necesitas tu propia copia de Hollow Knight.
+[![Build & Test](https://github.com/Muurrcc/AHK-asyncronus-hollow-knight/actions/workflows/build.yml/badge.svg)](https://github.com/Muurrcc/AHK-asyncronus-hollow-knight/actions/workflows/build.yml)
+![Hollow Knight](https://img.shields.io/badge/Hollow%20Knight-1.5.12459-2B3A4A?style=flat)
+![Unity](https://img.shields.io/badge/Unity-6000.0.61-222C37?style=flat&logo=unity&logoColor=white)
+![.NET](https://img.shields.io/badge/.NET-8-512BD4?style=flat&logo=dotnet&logoColor=white)
+![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4?style=flat&logo=windows&logoColor=white)
+![Version](https://img.shields.io/badge/version-1.1.0-C6613F?style=flat)
+![License](https://img.shields.io/badge/license-LGPL--2.1-blue?style=flat)
 
-## Instalar (jugadores)
+![Installer](docs/screenshots/installer-welcome.png)
 
-1. Descarga `Asyncronus-<versión>.msi` desde [Releases](../../releases).
-2. Cierra Hollow Knight y ejecútalo. No pide administrador.
-3. Abre el juego desde Steam: en el menú principal aparece **Start Multiplayer**.
+</div>
 
-Para actualizar, ejecuta el MSI nuevo encima. Para quitarlo: *Desinstalar Asyncronus* en el menú Inicio, o desde Configuración → Aplicaciones. Se restauran los ficheros originales del juego.
+> Fan project. Not affiliated with or endorsed by Team Cherry. You need your own copy of Hollow Knight.
 
-Todos los jugadores deben usar la **misma versión**. Si el instalador dice que tu juego no es la versión esperada: Steam → clic derecho en Hollow Knight → Propiedades → Archivos instalados → *Verificar integridad* (y sin betas).
+## Table of contents
+
+- [Features](#features)
+- [Preview](#preview)
+- [Installation](#installation)
+- [Uninstalling](#uninstalling)
+- [Playing](#playing)
+- [How it works](#how-it-works)
+- [Tech stack](#tech-stack)
+- [Project layout](#project-layout)
+- [Building from source](#building-from-source)
+- [Troubleshooting](#troubleshooting)
+- [Known limitations](#known-limitations)
+- [Credits & license](#credits--license)
+
+## Features
+
+- **Synced enemies.** If one player hits or kills an enemy, the other sees it. Health, soul and equipped charms are per player; world progress (doors, dead enemies, defeated bosses) is shared.
+- **Join by code over Steam.** The host shares a short code (`XXXX-XXXX`); friends join through Steam's relay network. No port forwarding, no VPN. Optional password.
+- **MSI installer that also updates.** Run a newer MSI over an old one to update. Uninstall from *Apps* or the Start menu; the original game files are restored.
+- **Coexists with other mods.** It only adds `Managed\Mods\Asyncronus`; other mods and your saves are never touched.
+- **No game files in this repository.** The installer applies a binary patch to *your* `Assembly-CSharp.dll` after verifying its hash.
+- **Classic IP + port** (UDP 26950) is still available as a fallback.
+
+## Preview
+
+| Maintenance (repair / remove) | Finish |
+|---|---|
+| ![Maintenance](docs/screenshots/installer-maintenance.png) | ![Finish](docs/screenshots/installer-finish.png) |
+
+The installer UI is currently in Spanish.
+
+## Installation
+
+1. Download `Asyncronus-<version>.msi` from [Releases](../../releases).
+2. Close Hollow Knight and run the MSI. It does not need administrator rights.
+3. Start the game from Steam. **Start Multiplayer** appears in the main menu.
+
+Everyone who plays together must use the **same version**.
+
+### Requirements
+
+| | |
+|---|---|
+| OS | Windows 10 / 11 |
+| Game | Hollow Knight on Steam, build **1.5.12459** (Unity 6), no beta branch |
+| Network | Steam running (for join-by-code) |
+
+If the installer says your game is not the expected version: Steam → right-click Hollow Knight → Properties → Installed Files → *Verify integrity of game files*, and make sure Betas is set to *None*.
 
 ### Windows SmartScreen
-El MSI no está firmado digitalmente (un certificado de firma es de pago), por lo que Windows puede avisar: *Más información → Ejecutar de todas formas*. Todo el código está en este repositorio.
 
-### Si usas Lumafly u otros mods
-Esta versión del juego necesita una Modding API distinta a la de Lumafly. El instalador **no borra ni mueve** tus mods, pero que funcionen o no con la API de Unity 6 depende de cada mod y no se ha comprobado. No uses "Instalar API" / "Actualizar todo" de Lumafly después: sobrescribiría esta API.
+The MSI is not code-signed (a signing certificate is a paid yearly item), so Windows may warn you: *More info → Run anyway*. All code is in this repository.
 
-## Jugar por Steam con código
+### Using Lumafly or other mods
 
-1. **Anfitrión**: entra en Start Multiplayer → *Start Hosting*. Verás tu código (también se copia al portapapeles y sale en el chat).
-2. **Amigos**: Start Multiplayer → escriben el código y pulsan *Unirse con código* (y la contraseña, si el anfitrión puso una).
-3. Alternativa clásica: IP y puerto (UDP 26950).
+This game version needs a different Modding API than the one Lumafly installs, so they are not compatible. The installer **never removes or moves your other mods**, but whether they work with the Unity 6 Modding API depends on each mod and has not been verified. Do not use Lumafly's *Install API* / *Update all* afterwards; it would overwrite this API.
 
-> Estado: la lógica del puente está probada con 66 tests unitarios, con sockets de Steam en local y dentro del juego, pero **la conexión real entre dos cuentas de Steam distintas a través de los relés todavía no se ha probado** (`ConnectP2P` entre cuentas distintas). Issues y reportes bienvenidos.
+## Uninstalling
 
-## Cómo funciona el instalador (y por qué no lleva archivos del juego)
-La Modding API para Unity 6 ([PR hk-modding/api #174](https://github.com/hk-modding/api/pull/174)) modifica `Assembly-CSharp.dll`. Este repositorio **no contiene código de Team Cherry**: el MSI incluye un *parche binario* (`installer/patches`) que se aplica en tu PC sobre tu `Assembly-CSharp.dll` original (se comprueba su hash), y genera los `MMHOOK_*` con HookGen localmente. Hace copia de seguridad de lo que sobrescribe. Detalles en [installer/README.md](installer/README.md).
+Use **Uninstall Asyncronus** in the Start menu, or Settings → Apps. The original `Assembly-CSharp.dll` and the files the installer added are restored from `hollow_knight_Data\Managed-vanilla-backup`. Your saves and other mods are left alone. *Verify integrity of game files* in Steam also works.
 
-## Compilar
-- Mod: copia `src/HKMP/LocalBuildProperties_example.props` a `LocalBuildProperties.props`, apunta `References` a un `Managed` con la API instalada y `dotnet build src/HKMP.sln -c Release`.
-- Tests: `dotnet test tests/HKMP.SteamBridge.Tests`.
-- MSI: ver `installer/README.md` (WiX 6).
+## Playing
 
-## Licencias
-HKMP es de Extremelyd1 bajo **LGPL-2.1** (`src/LICENSE`); este fork la mantiene. Los cambios nuevos se publican bajo la misma licencia. La Modding API es de hk-modding (MIT). Hollow Knight es de Team Cherry. Avisos de terceros en `installer/THIRD-PARTY-NOTICES.md`.
+1. **Host:** Start Multiplayer → *Start Hosting*. Your code is shown (and copied to the clipboard / printed in chat).
+2. **Friends:** Start Multiplayer → type the code → *Join / Unirse* (and the password, if you set one).
+3. Fallback: IP + port. A dedicated server (`HKMPServer`) can be built from `src/HKMPServer`.
+
+Server rules (PvP, damage, names) live in the server settings; `FullSynchronisation` must stay `true` for enemy sync.
+
+## How it works
+
+```mermaid
+flowchart LR
+    G[Guest game] -- UDP 127.0.0.1 --> CB[Client bridge]
+    CB -- Steam P2P relay --> HB[Host bridge]
+    HB -- UDP 127.0.0.1 --> S[HKMP server in the host game]
+```
+
+- **Steam bridge.** HKMP's protocol is unchanged. The host opens a Steam P2P listen socket and forwards each Steam connection to the local HKMP server through its own UDP socket (so HKMP sees one endpoint per player). The guest opens a local UDP port and forwards it over Steam to the host; HKMP connects to `127.0.0.1` without knowing. The code is the host's Steam account id plus a version and a check digit, as 8 readable characters (7 base32 + a check digit).
+- **Installer.** The Unity 6 Modding API ([hk-modding/api PR #174](https://github.com/hk-modding/api/pull/174)) modifies `Assembly-CSharp.dll`. The MSI ships a bsdiff-style binary delta that turns the vanilla DLL into the patched one, generates the `MMHOOK_*` files locally with MonoMod HookGen, backs up what it overwrites and installs the mod to `Managed\Mods\Asyncronus`.
+- **Enemy sync.** An extension of HKMP's entity system; unknown enemies are synced as generic entities. See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+
+## Tech stack
+
+| | |
+|---|---|
+| Mod | C# (.NET Framework 4.7.2 / Unity 6), HKMP fork, Hollow Knight Modding API, Steamworks.NET (shipped with the game) |
+| Networking | UDP + DTLS (BouncyCastle) locally, Steam Networking Sockets between players |
+| Installer | WiX Toolset 6 (MSI), C# custom actions (WiX DTF, .NET Framework 4.8), MonoMod HookGen |
+| Tests | xUnit (66 tests for the bridge, join code and relay) |
+
+## Project layout
+
+```
+src/                 HKMP fork (mod + dedicated server) with enemy sync and the Steam bridge
+  HKMP/Networking/SteamBridge/   Steam join-by-code bridge
+installer/           MSI installer (WiX, helper, binary delta, theme assets)
+tests/               Unit tests and a manual test harness for the bridge
+docs/                Development notes, icon and screenshots
+```
+
+## Building from source
+
+**Mod**
+
+1. Copy `src/HKMP/LocalBuildProperties_example.props` to `LocalBuildProperties.props` (same for `src/HKMPServer`) and set `References` to a game `Managed` folder with the Unity 6 Modding API installed, and `OutputDirectory`.
+2. `dotnet build src/HKMP.sln -c Release`
+
+**Tests**
+
+```
+dotnet test tests/HKMP.SteamBridge.Tests
+```
+
+**Installer** — requires WiX 6 (`dotnet tool install --global wix --version 6.0.2`) plus the original `Assembly-CSharp.dll` and a compiled Modding API. See [installer/README.md](installer/README.md).
+
+## Troubleshooting
+
+- **No "Start Multiplayer" button:** check `%USERPROFILE%\AppData\LocalLow\Team Cherry\Hollow Knight\ModLog.txt`; it should say `Modding API: 0.0.0.0-77` and list the mod.
+- **Cannot join with a code:** both players need Steam open and logged in, the same mod version, and the host must be in *Start Hosting*. Wrong password and full host are reported in the menu.
+- **IP connection times out:** UDP gives no errors. Check firewall/router, or use the code instead.
+- **Installer refuses to run:** the game must be closed and be build 1.5.12459 (see [Requirements](#requirements)).
+
+## Known limitations
+
+- **Join by code between two different Steam accounts has not yet been verified in the real relay network.** The bridge is covered by unit tests and by Steam sockets locally and inside the game, but a real two-account test is still pending. Please open an issue with your `ModLog.txt` if it fails.
+- Whole-game coverage is incomplete. Not verified: Godhome, Colosseum, PvP, level 2 spells, Sharp Shadow, Dung/Spore/Womb/Weaversong/Grimmchild/Dreamshield charms.
+- Enemies with no saved state respawn when re-entering an empty room, as in the base game.
+- Abilities and maps are per player (HKMP design).
+- Banning by IP is not useful for bridged players: they all arrive from `127.0.0.1`. Ban by key instead.
+
+## Credits & license
+
+- [HKMP](https://github.com/Extremelyd1/HKMP) by Extremelyd1, **LGPL-2.1** (`src/LICENSE`). This fork keeps that license; new code in `src/` is released under the same terms.
+- [Hollow Knight Modding API](https://github.com/hk-modding/api) by the hk-modding team (MIT); Unity 6 port by leesiuuuu ([HK-Modding-API](https://github.com/leesiuuuu/HK-Modding-API)).
+- Third-party components of the installer: see [installer/THIRD-PARTY-NOTICES.md](installer/THIRD-PARTY-NOTICES.md).
+- Hollow Knight is © Team Cherry. This project contains none of its files.
