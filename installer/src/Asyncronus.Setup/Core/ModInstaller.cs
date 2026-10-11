@@ -225,11 +225,46 @@ namespace Asyncronus.Setup
             File.Move(tmp, dst);
         }
 
+        /// <summary>True for a well-formed PE file without a CLR header (a native DLL; not an assembly, so not an error).</summary>
+        static bool IsNativeDll(string path)
+        {
+            try
+            {
+                using (var br = new BinaryReader(File.OpenRead(path)))
+                {
+                    if (br.ReadUInt16() != 0x5A4D) return false;
+                    br.BaseStream.Position = 0x3C;
+                    var pe = br.ReadInt32();
+                    br.BaseStream.Position = pe;
+                    if (br.ReadUInt32() != 0x00004550) return false;
+                    br.BaseStream.Position = pe + 24;
+                    var magic = br.ReadUInt16();
+                    var dirOffset = pe + 24 + (magic == 0x20B ? 112 : 96) + 14 * 8; // data directory 14 = CLR runtime header
+                    br.BaseStream.Position = dirOffset;
+                    return br.ReadUInt32() == 0;
+                }
+            }
+            catch { return false; }
+        }
+
         // -------------------------------------------------------- HookGen
         List<KeyValuePair<string, string>> GenerateHooks(string work, string vanillaAsm)
         {
             var wd = Path.Combine(work, "hooks");
             Directory.CreateDirectory(wd);
+            // HookGen reads every DLL of Managed; one corrupt or truncated file kills it with an unhelpful exception.
+            // Check them first so the user is told which file is damaged.
+            var damaged = new List<string>();
+            foreach (var f in Directory.GetFiles(managed, "*.dll"))
+            {
+                try { System.Reflection.AssemblyName.GetAssemblyName(f); }
+                catch (BadImageFormatException) { if (new FileInfo(f).Length > 0 && !IsNativeDll(f)) damaged.Add(Path.GetFileName(f)); else if (new FileInfo(f).Length == 0) damaged.Add(Path.GetFileName(f)); }
+                catch (IOException) { damaged.Add(Path.GetFileName(f)); }
+            }
+            if (damaged.Count > 0)
+                throw new SetupException("Estos ficheros de tu juego estan danados o incompletos: " + string.Join(", ", damaged.ToArray())
+                    + ". En Steam: clic derecho en Hollow Knight > Propiedades > Archivos instalados > Verificar integridad, y vuelve a ejecutar el instalador.");
+
             log("Preparando generacion de hooks...");
             foreach (var f in Directory.GetFiles(managed, "*.dll")) File.Copy(f, Path.Combine(wd, Path.GetFileName(f)), true);
             File.Copy(vanillaAsm, Path.Combine(wd, "Assembly-CSharp.dll"), true); // siempre el original
@@ -277,7 +312,26 @@ namespace Asyncronus.Setup
                 if (!p.WaitForExit(300000)) { try { p.Kill(); } catch { } throw new SetupException("Tiempo agotado ejecutando " + exe + "."); }
                 var text = (so.Result + se.Result).Trim();
                 if (p.ExitCode != 0)
-                    throw new SetupException("Fallo " + exe + " (codigo " + p.ExitCode + "). " + (text.Length > 600 ? text.Substring(0, 600) : text));
+                {
+                    // Full output to a file the user can send us (the MSI message box truncates long text).
+                    var NL = Environment.NewLine;
+                    string logPath = null;
+                    try
+                    {
+                        logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "asyncronus-error-log.txt");
+                        File.WriteAllText(logPath, "Asyncronus installer error" + NL + "Command: " + exe + " " + args + NL + "Exit code: " + p.ExitCode
+                            + NL + "OS: " + Environment.OSVersion + " / CLR " + Environment.Version + NL + "Work folder: " + wd + NL + NL + text);
+                    }
+                    catch { logPath = null; }
+                    // Put the exception line first: that is the useful part.
+                    string key = null;
+                    foreach (var line in text.Split(new[] { Convert.ToChar(10) }))
+                        if (line.IndexOf("Exception", StringComparison.OrdinalIgnoreCase) >= 0 || line.IndexOf("Excepci", StringComparison.OrdinalIgnoreCase) >= 0) { key = line.Trim(); break; }
+                    var head = key ?? (text.Length > 300 ? text.Substring(0, 300) : text);
+                    if (head.Length > 400) head = head.Substring(0, 400);
+                    throw new SetupException("Fallo " + exe + " (codigo " + p.ExitCode + "). " + head
+                        + (logPath != null ? NL + NL + "Se ha guardado el detalle completo en: " + logPath + " (enviamelo)." : ""));
+                }
             }
         }
 

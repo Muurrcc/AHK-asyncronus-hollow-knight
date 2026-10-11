@@ -12,7 +12,7 @@ Built on [HKMP](https://github.com/Extremelyd1/HKMP) · Hollow Knight 1.5.12459 
 ![Unity](https://img.shields.io/badge/Unity-6000.0.61-222C37?style=flat&logo=unity&logoColor=white)
 ![.NET](https://img.shields.io/badge/.NET-8-512BD4?style=flat&logo=dotnet&logoColor=white)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4?style=flat&logo=windows&logoColor=white)
-![Version](https://img.shields.io/badge/version-1.1.0-C6613F?style=flat)
+![Version](https://img.shields.io/badge/version-1.1.1-C6613F?style=flat)
 ![License](https://img.shields.io/badge/license-LGPL--2.1-blue?style=flat)
 
 ![Installer](docs/screenshots/installer-welcome.png)
