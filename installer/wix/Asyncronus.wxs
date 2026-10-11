@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  MSI de Asyncronus (WiX v6). Variables (build.ps1 -> wix build -d ...):
+    ProductVersion, PayloadDir (carpeta con payload.ini, patch, mod\, api\, tools\), CaDll (Asyncronus.CA.CA.dll),
+    VanillaSha256, PatchedSha256.
+
+  Decision de alcance: instalacion POR USUARIO (sin UAC). Las carpetas de Steam son escribibles por el usuario
+  (Steam las crea asi para actualizar juegos sin ser administrador), asi que el MSI no necesita elevacion; el
+  payload va a %LocalAppData%\Programs\Asyncronus y la accion personalizada escribe en la carpeta del juego.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package Name="Asyncronus (Hollow Knight multijugador)"
+           Manufacturer="Asyncronus"
+           Version="$(ProductVersion)"
+           UpgradeCode="A57C0E1B-3D52-4B7A-9F0C-6E2D8B41C7A9"
+           Scope="perUser"
+           Language="3082"
+           InstallerVersion="500"
+           Compressed="yes">
+
+    <SummaryInformation Description="Instalador y actualizador del mod multijugador Asyncronus para Hollow Knight" />
+
+    <MajorUpgrade AllowSameVersionUpgrades="yes"
+                  DowngradeErrorMessage="Ya hay una version mas reciente de Asyncronus instalada. Desinstalala primero si quieres volver a una version anterior." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Launch Condition="VersionNT &gt;= 603" Message="Asyncronus necesita Windows 10 o superior." />
+
+    <!-- Propiedades publicas: GAMEDIR se puede pasar por linea de comandos (msiexec /i X.msi GAMEDIR=&quot;D:\...\Hollow Knight&quot;). -->
+    <Property Id="GAMEDIR" Secure="yes" />
+    <Property Id="GAMEDIR_PREV" Secure="yes">
+      <RegistrySearch Id="PrevGameDir" Root="HKCU" Key="Software\Asyncronus\Mod" Name="GameDir" Type="raw" />
+    </Property>
+    <Property Id="VANILLA_SHA256" Value="$(VanillaSha256)" />
+    <Property Id="PATCHED_SHA256" Value="$(PatchedSha256)" />
+    <!-- "Desinstalar Asyncronus" (menu Inicio) pasa CONFIRMUNINSTALL=1 para pedir una confirmacion antes de restaurar. -->
+    <Property Id="CONFIRMUNINSTALL" Secure="yes" />
+    <!-- Mantenimiento: al volver a ejecutar el MSI ya instalado, WixUI_Minimal muestra Reparar / Quitar (en espanol por -culture es-ES). -->
+
+    <!-- UI minima en espanol -->
+    <!-- Tema (assets\THEME.md): variantes CLARAS de los graficos, porque el texto de WixUI es negro. Textos en Asyncronus.es-ES.wxl. -->
+    <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="..\assets\banner.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="..\assets\dialog.bmp" />
+    <Icon Id="asyncronus.ico" SourceFile="..\assets\asyncronus.ico" />
+    <Property Id="ARPPRODUCTICON" Value="asyncronus.ico" />
+    <!-- Estilo propio de titulo (Tinta #344252 sobre papel), referenciado como {\Asy_Title} en el .wxl. -->
+    <UI>
+      <TextStyle Id="Asy_Title" FaceName="Segoe UI Semibold" Size="12" Red="52" Green="66" Blue="82" />
+    </UI>
+    <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT" Value="Para actualizar en el futuro, ejecuta el instalador nuevo. Si algo falla, vuelve a ejecutarlo y elige Reparar." />
+    <ui:WixUI Id="WixUI_Minimal" />
+
+    <Feature Id="Main" Title="Asyncronus" Level="1">
+      <ComponentGroupRef Id="PayloadFiles" />
+      <ComponentRef Id="StateRegistry" />
+      <ComponentRef Id="UninstallShortcut" />
+    </Feature>
+
+    <!-- Acciones personalizadas (DTF, .NET Framework 4.8: ya incluido en Windows 10/11) -->
+    <Binary Id="AsyncronusCA" SourceFile="$(CaDll)" />
+    <CustomAction Id="LocateGame" BinaryRef="AsyncronusCA" DllEntry="LocateGame" Execute="immediate" Return="check" />
+
+    <CustomAction Id="SetInstallModData" Property="InstallMod" Value="PAYLOAD=[INSTALLFOLDER];GAMEDIR=[GAMEDIR]" />
+    <CustomAction Id="InstallMod" BinaryRef="AsyncronusCA" DllEntry="InstallMod" Execute="deferred" Impersonate="yes" Return="check" />
+
+    <CustomAction Id="SetRemoveModData" Property="RemoveMod" Value="GAMEDIR=[GAMEDIR]" />
+    <CustomAction Id="RemoveMod" BinaryRef="AsyncronusCA" DllEntry="RemoveMod" Execute="deferred" Impersonate="yes" Return="ignore" />
+
+    <InstallUISequence>
+      <Custom Action="LocateGame" After="CostFinalize" />
+    </InstallUISequence>
+
+    <InstallExecuteSequence>
+      <Custom Action="LocateGame" After="CostFinalize" />
+
+      <Custom Action="SetInstallModData" After="LocateGame" Condition="NOT REMOVE" />
+      <Custom Action="SetRemoveModData" After="LocateGame" Condition="REMOVE~=&quot;ALL&quot;" />
+
+      <Custom Action="InstallMod" Before="InstallFinalize" Condition="NOT REMOVE" />
+      <Custom Action="RemoveMod" Before="RemoveFiles" Condition="REMOVE~=&quot;ALL&quot;" />
+    </InstallExecuteSequence>
+  </Package>
+
+  <Fragment>
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsDir" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="Asyncronus">
+          <Directory Id="PayloadSubDir" Name="payload" />
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+  </Fragment>
+
+  <Fragment>
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="AppMenuDir" Name="Asyncronus" />
+    </StandardDirectory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="PayloadFiles" Directory="PayloadSubDir">
+      <Files Include="$(PayloadDir)\**" />
+    </ComponentGroup>
+
+    <!-- Recuerda la carpeta del juego para desinstalar/actualizar sin volver a buscarla. -->
+    <Component Id="StateRegistry" Directory="INSTALLFOLDER">
+      <RegistryValue Root="HKCU" Key="Software\Asyncronus\Mod" Name="GameDir" Type="string" Value="[GAMEDIR]" KeyPath="yes" />
+      <RegistryValue Root="HKCU" Key="Software\Asyncronus\Mod" Name="Version" Type="string" Value="$(ProductVersion)" />
+      <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
+    </Component>
+
+    <!-- Acceso directo del menu Inicio: lanza la misma desinstalacion del MSI (RemoveMod restaura el backup; no toca otros mods ni partidas). -->
+    <Component Id="UninstallShortcut" Directory="AppMenuDir">
+      <Shortcut Id="UninstallShortcutLnk" Name="Desinstalar Asyncronus" Icon="asyncronus.ico"
+                Description="Quita Asyncronus y restaura los ficheros originales de Hollow Knight"
+                Target="[SystemFolder]msiexec.exe" Arguments="/x [ProductCode] CONFIRMUNINSTALL=1" />
+      <RemoveFolder Id="RemoveAppMenuDir" Directory="AppMenuDir" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\Asyncronus\Mod" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+  </Fragment>
+</Wix>

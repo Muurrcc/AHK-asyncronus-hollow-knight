@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Textos del instalador (es-ES). Sobreescriben las cadenas de WixUI (todas "overridable"). Tono: frases cortas, tu, sin exclamaciones. Ver assets\THEME.md. -->
+<WixLocalization Culture="es-ES" xmlns="http://wixtoolset.org/schemas/v4/wxl">
+  <!-- Bienvenida + condiciones (WixUI_Minimal las junta en una sola pantalla) -->
+  <String Id="WelcomeEulaDlg_Title" Value="Asyncronus" />
+  <String Id="WelcomeEulaDlgTitle" Value="{\Asy_Title}Asyncronus" />
+  <String Id="WelcomeEulaDlgLicenseAcceptedCheckBox" Value="&amp;Acepto las condiciones" />
+  <String Id="WelcomeEulaDlgInstall" Value="&amp;Instalar" />
+  <String Id="WelcomeEulaDlgUpdate" Value="&amp;Actualizar" />
+
+  <!-- Preparación / reanudar / listo para -->
+  <String Id="PrepareDlg_Title" Value="Asyncronus" />
+  <String Id="PrepareDlgTitle" Value="{\Asy_Title}Asyncronus" />
+  <String Id="PrepareDlgDescription" Value="Preparando la instalación. Un momento." />
+  <String Id="ResumeDlg_Title" Value="Asyncronus" />
+  <String Id="ResumeDlgTitle" Value="{\Asy_Title}Continuar la instalación" />
+  <String Id="ResumeDlgDescription" Value="La instalación de Asyncronus quedó a medias. Pulsa Instalar para terminarla." />
+  <String Id="VerifyReadyDlg_Title" Value="Asyncronus" />
+  <String Id="VerifyReadyDlgInstallTitle" Value="{\Asy_Title}Todo listo" />
+  <String Id="VerifyReadyDlgInstallText" Value="Pulsa Instalar para colocar el mod en Hollow Knight." />
+  <String Id="VerifyReadyDlgRepairTitle" Value="{\Asy_Title}Reparar Asyncronus" />
+  <String Id="VerifyReadyDlgRepairText" Value="Pulsa Reparar para volver a colocar los archivos del mod." />
+  <String Id="VerifyReadyDlgRemoveTitle" Value="{\Asy_Title}Quitar Asyncronus" />
+  <String Id="VerifyReadyDlgRemoveText" Value="Pulsa Quitar para desinstalar el mod y restaurar los archivos originales de Hollow Knight." />
+
+  <!-- Progreso -->
+  <String Id="ProgressDlg_Title" Value="Asyncronus" />
+  <String Id="ProgressDlgTitleInstalling" Value="{\Asy_Title}Instalando" />
+  <String Id="ProgressDlgTitleUpdating" Value="{\Asy_Title}Actualizando" />
+  <String Id="ProgressDlgTitleRepairing" Value="{\Asy_Title}Reparando" />
+  <String Id="ProgressDlgTitleRemoving" Value="{\Asy_Title}Quitando" />
+  <String Id="ProgressDlgTitleChanging" Value="{\Asy_Title}Aplicando cambios" />
+  <String Id="ProgressDlgTextInstalling" Value="Colocando los archivos del mod. Puede tardar un momento." />
+  <String Id="ProgressDlgTextUpdating" Value="Actualizando los archivos del mod. Puede tardar un momento." />
+  <String Id="ProgressDlgTextRepairing" Value="Volviendo a colocar los archivos del mod. Puede tardar un momento." />
+  <String Id="ProgressDlgTextRemoving" Value="Quitando el mod y restaurando los archivos originales." />
+  <String Id="ProgressDlgTextChanging" Value="Aplicando cambios. Puede tardar un momento." />
+  <String Id="ProgressDlgStatusLabel" Value="Estado:" />
+  <String Id="ProgressDlgProgressBar" Value="Progreso" />
+
+  <!-- Mantenimiento (al ejecutar de nuevo el MSI ya instalado) -->
+  <String Id="MaintenanceWelcomeDlg_Title" Value="Asyncronus" />
+  <String Id="MaintenanceWelcomeDlgTitle" Value="{\Asy_Title}Asyncronus" />
+  <String Id="MaintenanceWelcomeDlgDescription" Value="Asyncronus ya esta instalado. Puedes repararlo o quitarlo." />
+  <String Id="MaintenanceTypeDlg_Title" Value="Asyncronus" />
+  <String Id="MaintenanceTypeDlgTitle" Value="{\Asy_Title}Reparar o quitar" />
+  <String Id="MaintenanceTypeDlgDescription" Value="Elige que quieres hacer." />
+  <String Id="MaintenanceTypeDlgRepairText" Value="Vuelve a colocar los archivos del mod si algo falta o esta danado." />
+  <String Id="MaintenanceTypeDlgRemoveText" Value="Quita el mod y restaura los archivos originales de Hollow Knight." />
+  <String Id="MaintenanceTypeDlgChangeDisabledText" Value="No hay opciónes que cambiar." />
+  <String Id="MaintenanceTypeDlgChangeText" Value="No hay opciónes que cambiar." />
+  <String Id="MaintenanceTypeDlgRepairDisabledText" Value="No se puede reparar Asyncronus." />
+  <String Id="MaintenanceTypeDlgRemoveDisabledText" Value="No se puede quitar Asyncronus." />
+
+  <!-- Final y errores -->
+  <String Id="ExitDialog_Title" Value="Asyncronus" />
+  <String Id="ExitDialogTitle" Value="{\Asy_Title}Instalación completada" />
+  <String Id="ExitDialogDescription" Value="Asyncronus está listo. Inicia Hollow Knight para jugar." />
+  <String Id="FatalError_Title" Value="Asyncronus" />
+  <String Id="FatalErrorTitle" Value="{\Asy_Title}La instalación no se completo" />
+  <String Id="FatalErrorDescription1" Value="La instalación no pudo completarse. Cierra el juego e inténtalo de nuevo. No se ha modificado nada." />
+  <String Id="FatalErrorDescription2" Value="Pulsa Finalizar para salir." />
+  <String Id="UserExit_Title" Value="Asyncronus" />
+  <String Id="UserExitTitle" Value="{\Asy_Title}Instalación cancelada" />
+  <String Id="UserExitDescription1" Value="Se canceló la instalación. No se ha modificado nada." />
+  <String Id="UserExitDescription2" Value="Pulsa Finalizar para salir." />
+</WixLocalization>

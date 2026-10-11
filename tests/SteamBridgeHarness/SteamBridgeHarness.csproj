@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Manual integration harness for the Steam bridge (not a unit test: needs a running HKMPServer and, for the
+         Steam modes, a running Steam client). Compiles the bridge sources directly and drives HKMP's own NetClient
+         (from the built HKMP.dll, by reflection) through the bridge.
+         Build: dotnet build -c Release -p:HkmpBin=<folder with HKMP.dll and BouncyCastle> -p:GameManaged=<Managed> -->
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net472</TargetFramework>
+        <PlatformTarget>x64</PlatformTarget>
+        <LangVersion>latest</LangVersion>
+        <Nullable>disable</Nullable>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+        <HkmpSrc>..\..\src\HKMP</HkmpSrc>
+        <HkmpBin Condition="'$(HkmpBin)' == ''">..\..\src\HKMPServer\bin\Release\net472</HkmpBin>
+        <GameManaged Condition="'$(GameManaged)' == ''">X:\SteamLibrary\steamapps\common\Hollow Knight\hollow_knight_Data\Managed</GameManaged>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="$(HkmpSrc)\Logging\ILogger.cs" Link="Linked\ILogger.cs" />
+        <Compile Include="$(HkmpSrc)\Logging\Logger.cs" Link="Linked\Logger.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamJoinCode.cs" Link="Linked\SteamJoinCode.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeProtocol.cs" Link="Linked\SteamBridgeProtocol.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\ISteamBridgeLink.cs" Link="Linked\ISteamBridgeLink.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeHostCore.cs" Link="Linked\SteamBridgeHostCore.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeClientCore.cs" Link="Linked\SteamBridgeClientCore.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeWorker.cs" Link="Linked\SteamBridgeWorker.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeSleep.cs" Link="Linked\SteamBridgeSleep.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeLink.cs" Link="Linked\SteamBridgeLink.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeHost.cs" Link="Linked\SteamBridgeHost.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeClient.cs" Link="Linked\SteamBridgeClient.cs" />
+        <Compile Include="..\HKMP.SteamBridge.Tests\MemoryLink.cs" Link="Linked\MemoryLink.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="com.rlabrecque.steamworks.net">
+            <HintPath>$(GameManaged)\com.rlabrecque.steamworks.net.dll</HintPath>
+            <Private>True</Private>
+        </Reference>
+    </ItemGroup>
+
+    <!-- HKMP.dll and its dependencies are loaded at runtime by reflection (internal types) -->
+    <ItemGroup>
+        <None Include="$(HkmpBin)\HKMP.dll;$(HkmpBin)\BouncyCastle.Cryptography.dll;$(HkmpBin)\Newtonsoft.Json.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+        <!-- NetClient raises its events through Hkmp.Util.ThreadUtil (a MonoBehaviour): the type must load -->
+        <None Include="$(GameManaged)\UnityEngine.CoreModule.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+        <None Include="$(GameManaged)\..\Plugins\x86_64\steam_api64.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+    </ItemGroup>
+
+</Project>

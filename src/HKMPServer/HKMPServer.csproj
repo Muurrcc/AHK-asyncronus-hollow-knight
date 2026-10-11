@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="LocalBuildProperties_example.props" Condition="!Exists('LocalBuildProperties.props')" />
+    <Import Project="LocalBuildProperties.props" Condition="Exists('LocalBuildProperties.props')" />
+
+    <PropertyGroup>
+        <ProjectGuid>{5AB0E450-3F37-4715-916F-CF2EC62D398B}</ProjectGuid>
+        <RootNamespace>HkmpServer</RootNamespace>
+        <AssemblyName>HKMPServer</AssemblyName>
+        <TargetFramework>net472</TargetFramework>
+        <OutputType>exe</OutputType>
+        <!--Shortens and anonymizes paths in debug symbols relative to the project directory. Breakpoints will not work, however.-->
+        <PathMap Condition="'$(Configuration)' == 'Release'">$(MSBuildProjectDirectory)=source</PathMap>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\HKMP\HKMP.csproj">
+            <Project>{f34118b2-515d-4c33-88e6-9cfef2ad5a15}</Project>
+            <Name>HKMP</Name>
+        </ProjectReference>
+        <!-- The game's (Unity 6) Newtonsoft.Json.dll fails strong-name validation on .NET Framework, so the
+             standalone server uses the official package (same AssemblyVersion 13.0.0.0). -->
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    </ItemGroup>
+</Project>

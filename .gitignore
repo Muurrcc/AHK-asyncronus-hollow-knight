@@ -1,0 +1,11 @@
+bin/
+obj/
+*.dll
+*.exe
+*.msi
+*.wixpdb
+packages/
+dist/
+build/
+api-precompilada/
+build-cache/

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Unit tests for the pure (game and Steam independent) part of the Steam bridge. The sources are compiled
+         directly into this assembly, so no game assemblies are needed. -->
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <Nullable>disable</Nullable>
+        <IsPackable>false</IsPackable>
+        <RootNamespace>Hkmp.SteamBridge.Tests</RootNamespace>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <HkmpSrc>..\..\src\HKMP</HkmpSrc>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="$(HkmpSrc)\Logging\ILogger.cs" Link="Linked\ILogger.cs" />
+        <Compile Include="$(HkmpSrc)\Logging\Logger.cs" Link="Linked\Logger.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamJoinCode.cs" Link="Linked\SteamJoinCode.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeProtocol.cs" Link="Linked\SteamBridgeProtocol.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\ISteamBridgeLink.cs" Link="Linked\ISteamBridgeLink.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeHostCore.cs" Link="Linked\SteamBridgeHostCore.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeClientCore.cs" Link="Linked\SteamBridgeClientCore.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeWorker.cs" Link="Linked\SteamBridgeWorker.cs" />
+        <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeSleep.cs" Link="Linked\SteamBridgeSleep.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+        <PackageReference Include="xunit" Version="2.9.3" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+    </ItemGroup>
+
+</Project>

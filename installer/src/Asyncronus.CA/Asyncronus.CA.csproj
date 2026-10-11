@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>Asyncronus.CA</AssemblyName>
+    <RootNamespace>Asyncronus.CA</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Asyncronus.Setup\Core\*.cs" Link="Core\%(Filename)%(Extension)" />
+    <Content Include="CustomAction.config" />
+    <Reference Include="System.Windows.Forms" />
+    <PackageReference Include="WixToolset.Dtf.CustomAction" Version="6.0.2" />
+  </ItemGroup>
+</Project>
