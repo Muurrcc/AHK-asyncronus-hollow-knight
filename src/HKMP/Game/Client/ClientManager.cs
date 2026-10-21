@@ -62,6 +62,11 @@ internal class ClientManager : IClientManager {
     private readonly PlayerManager _playerManager;
 
     /// <summary>
+    /// The teleport manager (teleport to another player).
+    /// </summary>
+    private readonly TeleportManager _teleportManager;
+
+    /// <summary>
     /// The animation manager instance.
     /// </summary>
     private readonly AnimationManager _animationManager;
@@ -95,6 +100,11 @@ internal class ClientManager : IClientManager {
     /// The FSM patcher instance.
     /// </summary>
     private readonly FsmPatcher _fsmPatcher;
+
+    /// <summary>
+    /// Makes arenas with battle gates wait until all players in the scene are inside.
+    /// </summary>
+    private readonly ArenaEntryGate _arenaEntryGate;
 
     /// <summary>
     /// The client addon manager instance.
@@ -226,6 +236,7 @@ internal class ClientManager : IClientManager {
         _playerData = new Dictionary<ushort, ClientPlayerData>();
 
         _playerManager = new PlayerManager(serverSettings, _playerData);
+        _teleportManager = new TeleportManager(netClient, _playerData, serverSettings);
         _animationManager = new AnimationManager(netClient, _playerManager);
         _mapManager = new MapManager(netClient, serverSettings);
 
@@ -236,6 +247,7 @@ internal class ClientManager : IClientManager {
         _pauseManager = new PauseManager(netClient);
         _gamePatcher = new GamePatcher(netClient);
         _fsmPatcher = new FsmPatcher();
+        _arenaEntryGate = new ArenaEntryGate(serverSettings, _playerData);
 
         _commandManager = new ClientCommandManager();
         var eventAggregator = new EventAggregator();
@@ -279,6 +291,7 @@ internal class ClientManager : IClientManager {
             Connect(address, port, username);
         };
         _uiManager.RequestClientDisconnectEvent += Disconnect;
+        _uiManager.RequestTeleportEvent += () => _teleportManager.Request();
         _uiManager.RequestServerStartHostEvent += _ => {
             _saveManager.IsHostingServer = true;
         };
@@ -311,6 +324,7 @@ internal class ClientManager : IClientManager {
         if (_fullSynchronisation) {
             _entityManager.RegisterHooks();
             _saveManager.RegisterHooks();
+            _arenaEntryGate.RegisterHooks();
         }
         
         // Register handlers for various things
@@ -339,6 +353,7 @@ internal class ClientManager : IClientManager {
         if (_fullSynchronisation) {
             _entityManager.DeregisterHooks();
             _saveManager.DeregisterHooks();
+            _arenaEntryGate.DeregisterHooks();
         }
         
         // Deregister handlers for various things
@@ -357,6 +372,7 @@ internal class ClientManager : IClientManager {
     /// </summary>
     private void RegisterCommands() {
         _commandManager.RegisterCommand(new AddonCommand(_addonManager, _netClient));
+        _commandManager.RegisterCommand(new TeleportCommand(_teleportManager));
     }
 
     /// <summary>
@@ -394,6 +410,10 @@ internal class ClientManager : IClientManager {
         _packetManager.RegisterClientUpdatePacketHandler<PlayerMapUpdate>(
             ClientUpdatePacketId.PlayerMapUpdate,
             OnPlayerMapUpdate
+        );
+        _packetManager.RegisterClientUpdatePacketHandler<PlayerTeleport>(
+            ClientUpdatePacketId.PlayerTeleport,
+            _teleportManager.OnPlayerTeleport
         );
         _packetManager.RegisterClientUpdatePacketHandler<ServerSettingsUpdate>(
             ClientUpdatePacketId.ServerSettingsUpdated,
@@ -450,6 +470,7 @@ internal class ClientManager : IClientManager {
         _packetManager.DeregisterClientUpdatePacketHandler(ClientUpdatePacketId.PlayerUpdate);
         _packetManager.DeregisterClientUpdatePacketHandler(ClientUpdatePacketId.PlayerMapUpdate);
         _packetManager.DeregisterClientUpdatePacketHandler(ClientUpdatePacketId.ServerSettingsUpdated);
+        _packetManager.DeregisterClientUpdatePacketHandler(ClientUpdatePacketId.PlayerTeleport);
         _packetManager.DeregisterClientUpdatePacketHandler(ClientUpdatePacketId.ChatMessage);
         _packetManager.DeregisterClientUpdatePacketHandler(ClientUpdatePacketId.PlayerSetting);
         _packetManager.DeregisterClientUpdatePacketHandler(ClientUpdatePacketId.PlayerDeath);
@@ -514,9 +535,13 @@ internal class ClientManager : IClientManager {
 
         // Let the player manager know we disconnected
         _playerManager.OnDisconnect();
+        _teleportManager.OnDisconnect();
+        _uiManager.SetTeleportAvailable(false);
 
         // Clear the player data dictionary
         _playerData.Clear();
+
+        EnemyHealthScaling.Reset();
 
         _uiManager.OnClientDisconnect();
 
@@ -615,6 +640,7 @@ internal class ClientManager : IClientManager {
         _serverSettings.SetAllProperties(serverInfo.ServerSettingsUpdate.ServerSettings);
         // Call the event that the settings were updated
         ServerSettingsChangedEvent?.Invoke(serverInfo.ServerSettingsUpdate.ServerSettings);
+        _uiManager.SetTeleportAvailable(_serverSettings.AllowTeleport);
 
         // Note whether full synchronisation is enabled
         _fullSynchronisation = serverInfo.FullSynchronisation;
@@ -653,6 +679,8 @@ internal class ClientManager : IClientManager {
         foreach (var (id, username) in serverInfo.PlayerInfo) {
             _playerData[id] = new ClientPlayerData(id, username);
         }
+
+        UpdateEnemyHealthScaling();
         
         // Add the username to the player if we are in-game already
         if (HeroController.instance && HeroController.instance.gameObject) {
@@ -718,6 +746,8 @@ internal class ClientManager : IClientManager {
 
         UiManager.InternalChatBox.AddMessage($"Player '{playerConnect.Username}' connected to the server");
 
+        UpdateEnemyHealthScaling();
+
         try {
             PlayerConnectEvent?.Invoke(playerData);
         } catch (Exception e) {
@@ -747,6 +777,8 @@ internal class ClientManager : IClientManager {
 
         // Clear the player from the player data mapping
         _playerData.Remove(id);
+
+        UpdateEnemyHealthScaling();
 
         if (playerDisconnect.TimedOut) {
             UiManager.InternalChatBox.AddMessage($"Player '{username}' timed out");
@@ -982,6 +1014,19 @@ internal class ClientManager : IClientManager {
     }
 
     /// <summary>
+    /// Recompute the enemy health multiplier from the number of connected players (all players known to this client
+    /// plus the local player) and the server setting. Applied by the scene host on every hit, so a change takes effect
+    /// from the next hit and keeps the remaining fraction of the enemy health (see <see cref="EnemyHealthScaling"/>).
+    /// </summary>
+    private void UpdateEnemyHealthScaling() {
+        var playerCount = _playerData.Count + 1;
+        if (EnemyHealthScaling.Update(playerCount, _serverSettings.EnemyHealthPercentPerExtraPlayer)) {
+            Logger.Info(
+                $"Enemy health multiplier is now x{EnemyHealthScaling.CurrentMultiplier:0.##} ({playerCount} players, {_serverSettings.EnemyHealthPercentPerExtraPlayer}% per extra player)");
+        }
+    }
+
+    /// <summary>
     /// Callback method for when the server settings are updated by the server.
     /// </summary>
     /// <param name="update">The <see cref="ServerSettingsUpdate"/> packet data.</param>
@@ -995,6 +1040,8 @@ internal class ClientManager : IClientManager {
         var allowSkinsChanged = false;
 
         var newServerSettings = update.ServerSettings;
+
+        _uiManager.SetTeleportAvailable(newServerSettings.AllowTeleport);
 
         // Check whether the PvP state changed
         if (_serverSettings.IsPvpEnabled != newServerSettings.IsPvpEnabled) {
@@ -1072,6 +1119,8 @@ internal class ClientManager : IClientManager {
 
         // Update the settings so callbacks can read updated values
         _serverSettings.SetAllProperties(newServerSettings);
+
+        UpdateEnemyHealthScaling();
         // Call the event that the settings were updated
         ServerSettingsChangedEvent?.Invoke(newServerSettings);
 

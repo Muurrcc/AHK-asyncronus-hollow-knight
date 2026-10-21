@@ -41,6 +41,7 @@ dotnet build Assembly-CSharp -c Release --runtime win-x64 -p:CopyDir=
 | No "TMP Settings" resource: `AddComponent<TextMeshPro>()` throws | `HkmpFontManager.EnsureTmpSettings()` creates one at runtime |
 | `activeSceneChanged` gives an empty old scene name (`Opening_Sequence` → `Tutorial_01`) → `SetLeftScene(null)` spam | `ClientManager.OnSceneChange` falls back to the last scene and never sends null |
 | Server: the game's Newtonsoft.Json fails strong-name validation on .NET Framework | `HKMPServer.csproj` uses the NuGet package 13.0.3 |
+| The Unity 6 Modding API (`unity6-support`, `Patches/GameManager.cs` `SaveGame`) writes `userN.dat` as plain JSON, but the vanilla loader and save-menu stats expect the encrypted BinaryFormatter format (`useSaveEncryption`), so every slot saved with the mod (quit to menu, bench) shows as corrupted and Continue fails | `SaveFormatGuard` (hooks `DesktopPlatform.WriteSaveSlot`/`ReadSaveSlot`, registered in the `HkmpMod` constructor) encrypts plain JSON on write and reads already-broken plain JSON slots; format in `Util/SaveFileFormat.cs` (unit tested). Real fix belongs in the API |
 
 ## Enemy sync notes
 
@@ -64,7 +65,7 @@ Code in `src/HKMP/Networking/SteamBridge/`. Pure logic (code, protocol, relay co
 
 ## Developer launch arguments
 
-Inactive unless passed on the command line: `-hkmp-menu`, `-hkmp-connect IP:PORT`, `-hkmp-name NAME`, `-hkmp-test`, `-hkmp-test-health`, `-hkmp-test-attacks`, and for the Steam bridge `-hkmp-steam-pair`, `-hkmp-steam-host-to`, `-hkmp-steam-join`, `-hkmp-steam-host-test`, `-hkmp-menu-shot`. `tests/SteamBridgeHarness` is a manual harness that needs an `HKMPServer` and Steam running.
+Inactive unless passed on the command line: `-hkmp-menu`, `-hkmp-connect IP:PORT`, `-hkmp-name NAME`, `-hkmp-test`, `-hkmp-test-health`, `-hkmp-test-attacks`, and for the Steam bridge `-hkmp-steam-pair`, `-hkmp-steam-host-to`, `-hkmp-steam-join`, `-hkmp-steam-host-test`, `-hkmp-menu-shot`. Save/quit test: `-hkmp-test-save host|client` (`Ui/DevSaveTest.cs`, with `-hkmp-test-dir`, `-hkmp-test-save-slot`, `-hkmp-test-save-port`; the client also needs `-hkmp-connect`): hosts a slot, both change data, quit to the menu with save as client and as host, continue the slot again and check the data (`HKMP_SAVE` lines in the ModLog). `tests/SteamBridgeHarness` is a manual harness that needs an `HKMPServer` and Steam running.
 
 ## Two game instances on one PC
 
@@ -73,3 +74,7 @@ Both share ModLog, saves and settings under `LocalLow\Team Cherry`. To isolate t
 ## Not verified
 
 Godhome, Colosseum, level 2 spells, Sharp Shadow, Dung/Spore/Womb/Weaversong/Grimmchild/Dreamshield charms, real bench and Focus (simulated), PvP enabled, a real two-account Steam relay connection, long sessions.
+
+## Linux
+
+Installer, requirements and portability review in [LINUX.md](LINUX.md). Unverified on a real Linux machine.

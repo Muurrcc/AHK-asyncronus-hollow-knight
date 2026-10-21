@@ -7,6 +7,7 @@ using Hkmp.Game.Settings;
 using Hkmp.Networking.Client;
 using Hkmp.Networking.SteamBridge;
 using Hkmp.Ui.Chat;
+using Hkmp.Ui.Component;
 using Hkmp.Util;
 using Modding;
 using Modding.Menu;
@@ -96,6 +97,21 @@ internal class UiManager : IUiManager {
     /// Event that is fired when a disconnect is requested.
     /// </summary>
     public event Action RequestClientDisconnectEvent;
+
+    /// <summary>
+    /// Event that is executed when the teleport button of the pause menu is pressed.
+    /// </summary>
+    public event Action RequestTeleportEvent;
+
+    /// <summary>
+    /// The component group with the teleport button, only shown while the game is paused.
+    /// </summary>
+    private ComponentGroup _teleportGroup;
+
+    /// <summary>
+    /// Whether the server allows teleporting (and we are connected).
+    /// </summary>
+    private bool _teleportAvailable;
 
     /// <summary>
     /// The mod settings for HKMP.
@@ -223,9 +239,27 @@ internal class UiManager : IUiManager {
             _netClient
         );
 
+        _teleportGroup = new ComponentGroup(false, uiGroup);
+        var teleportButton = new ButtonComponent(
+            _teleportGroup,
+            new Vector2(1920f - 160f, 1080f - 60f),
+            "Teleport / TP"
+        );
+        teleportButton.SetOnPress(() => {
+            RequestTeleportEvent?.Invoke();
+
+            try {
+                UM.UIClosePauseMenu();
+            } catch (Exception e) {
+                Logger.Warn($"Could not close pause menu after teleport request: {e.Message}");
+            }
+        });
+
         // Register callbacks to make sure the UI is hidden and shown at correct times
         On.UIManager.SetState += (orig, self, state) => {
             orig(self, state);
+
+            _teleportGroup.SetActive(state == UIState.PAUSED && _teleportAvailable && _netClient.IsConnected);
 
             if (state == UIState.PAUSED) {
                 inGameGroup.SetActive(false);
@@ -384,6 +418,48 @@ internal class UiManager : IUiManager {
         }
     }
     
+    /// <summary>
+    /// Start hosting from the main menu on the given save slot as if the "Start Hosting" button was pressed and the
+    /// slot was picked in the save menu (continue if the slot has a save, new game otherwise). Used by
+    /// <see cref="DevSaveTest"/>.
+    /// </summary>
+    internal void DevStartHost(string username, int port, int slot, bool slotHasSave) {
+        OpenSaveSlotSelection(saveSelected => {
+            if (!saveSelected) {
+                return;
+            }
+
+            RequestServerStartHostEvent?.Invoke(port);
+            RequestClientConnectEvent?.Invoke(LocalhostAddress, port, username, true);
+        });
+
+        UM.StartCoroutine(DevPickSlot(slot, slotHasSave));
+    }
+
+    private IEnumerator DevPickSlot(int slot, bool slotHasSave) {
+        var waited = 0f;
+        yield return new WaitUntil(() => {
+            waited += Time.unscaledDeltaTime;
+            return UM.menuState == MainMenuState.SAVE_PROFILES || waited > 8f;
+        });
+        yield return new WaitForSecondsRealtime(2f);
+        Logger.Info($"DevPickSlot: menuState {UM.menuState}, slot {slot}, has save {slotHasSave}");
+
+        if (slotHasSave) {
+            GM.LoadGameFromUI(slot);
+        } else {
+            GM.profileID = slot;
+            // Skip the first-run overscan/brightness screens of a fresh game profile
+            Logger.Info(
+                $"DevPickSlot: overscanAdjusted {GM.gameSettings.overscanAdjusted}, " +
+                $"brightnessAdjusted {GM.gameSettings.brightnessAdjusted}"
+            );
+            GM.gameSettings.overscanAdjusted = 1;
+            GM.gameSettings.brightnessAdjusted = 1;
+            UM.StartNewGame();
+        }
+    }
+
     /// <summary>
     /// Disconnect from the server and return to the main menu without saving (used by <see cref="DevAutoConnect"/>
     /// in the automated tests).
@@ -727,8 +803,22 @@ internal class UiManager : IUiManager {
     /// </summary>
     public void OnClientDisconnect() {
         _steamBridge.StopClient();
+        SetTeleportAvailable(false);
         _connectInterface.OnClientDisconnect();
         _pingInterface.SetEnabled(false);
+    }
+
+    /// <summary>
+    /// Set whether teleporting to other players is available (server allows it and we are connected). Controls
+    /// whether the teleport button shows up in the pause menu.
+    /// </summary>
+    /// <param name="available">Whether teleporting is available.</param>
+    public void SetTeleportAvailable(bool available) {
+        _teleportAvailable = available;
+
+        if (!available) {
+            _teleportGroup?.SetActive(false);
+        }
     }
 
     #endregion

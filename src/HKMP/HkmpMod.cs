@@ -38,6 +38,9 @@ internal class HkmpMod : Mod, IGlobalSettings<ModSettings>, ILocalSettings<ModSa
     /// Construct the HKMP mod.
     /// </summary>
     public HkmpMod() : base("HKMP") {
+        // Keep save slots in the format the game can load (the Unity 6 Modding API writes them unencrypted).
+        // Registered as early as possible, the main menu reads the save slot stats before Initialize.
+        Game.Client.Save.SaveFormatGuard.Register();
     }
 
     /// <inheritdoc />
@@ -95,7 +98,13 @@ internal class HkmpMod : Mod, IGlobalSettings<ModSettings>, ILocalSettings<ModSa
     
     /// <inheritdoc />
     public ModSaveFile OnSaveLocal() {
-        return _gameManager.ServerManager.OnSaveLocal();
+        // Never throw while the game saves: a failure here must not take the vanilla save down with it
+        try {
+            return _gameManager?.ServerManager?.OnSaveLocal() ?? new ModSaveFile();
+        } catch (System.Exception e) {
+            Logging.Logger.Error($"Could not serialize the mod save data, writing an empty one: {e}");
+            return new ModSaveFile();
+        }
     }
 
     /// <inheritdoc />

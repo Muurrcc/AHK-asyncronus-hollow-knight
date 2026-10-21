@@ -174,7 +174,7 @@ namespace HkmpServer {
                     var consoleSaveFile = ConsoleSaveFile.FromServerSaveData(serverSaveData);
                     var saveFileText = JsonConvert.SerializeObject(consoleSaveFile, Formatting.Indented);
 
-                    File.WriteAllText(_saveFilePath, saveFileText);
+                    Hkmp.Util.SafeFile.WriteAllTextAtomic(_saveFilePath, saveFileText);
                 } catch (Exception e) {
                     Logger.Error($"Exception occurred while serializing/writing to save file:\n{e}");
                 }

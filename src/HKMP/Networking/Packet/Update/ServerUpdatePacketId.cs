@@ -77,5 +77,10 @@ public enum ServerUpdatePacketId {
     /// <summary>
     /// Player settings are update for the local player.
     /// </summary>
-    PlayerSetting = 14
+    PlayerSetting = 14,
+
+    /// <summary>
+    /// Request to teleport to another player.
+    /// </summary>
+    PlayerTeleportRequest = 15
 }

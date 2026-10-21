@@ -104,6 +104,11 @@ internal abstract class ServerManager : IServerManager {
     /// </summary>
     protected ServerSaveData ServerSaveData;
 
+    /// <summary>
+    /// Whether the server is currently running.
+    /// </summary>
+    protected bool IsStarted => _netServer.IsStarted;
+
     #endregion
 
     #region Internal server manager commands
@@ -299,6 +304,10 @@ internal abstract class ServerManager : IServerManager {
             ServerUpdatePacketId.ChatMessage,
             OnChatMessage
         );
+        _packetManager.RegisterServerUpdatePacketHandler<PlayerTeleportRequest>(
+            ServerUpdatePacketId.PlayerTeleportRequest,
+            OnPlayerTeleportRequest
+        );
         _packetManager.RegisterServerUpdatePacketHandler<ServerSettingsUpdate>(
             ServerUpdatePacketId.ServerSettings,
             OnServerSettingsUpdate
@@ -341,6 +350,7 @@ internal abstract class ServerManager : IServerManager {
         _packetManager.DeregisterServerUpdatePacketHandler(ServerUpdatePacketId.PlayerDisconnect);
         _packetManager.DeregisterServerUpdatePacketHandler(ServerUpdatePacketId.PlayerDeath);
         _packetManager.DeregisterServerUpdatePacketHandler(ServerUpdatePacketId.ChatMessage);
+        _packetManager.DeregisterServerUpdatePacketHandler(ServerUpdatePacketId.PlayerTeleportRequest);
         _packetManager.DeregisterServerUpdatePacketHandler(ServerUpdatePacketId.ServerSettings);
         _packetManager.DeregisterServerUpdatePacketHandler(ServerUpdatePacketId.PlayerSetting);
 
@@ -1570,6 +1580,36 @@ internal abstract class ServerManager : IServerManager {
     /// <returns>true if the message was processed as a command, false otherwise.</returns>
     public bool TryProcessCommand(ICommandSender commandSender, string message) {
         return CommandManager.ProcessCommand(commandSender, message);
+    }
+
+    /// <summary>
+    /// Callback method for when a player asks to teleport to another player.
+    /// </summary>
+    /// <param name="id">The ID of the requesting player.</param>
+    /// <param name="request">The <see cref="PlayerTeleportRequest"/> packet data.</param>
+    private void OnPlayerTeleportRequest(ushort id, PlayerTeleportRequest request) {
+        var updateManager = _netServer.GetUpdateManagerForClient(id);
+        if (updateManager == null || !_playerData.TryGetValue(id, out var playerData)) {
+            return;
+        }
+
+        if (!InternalServerSettings.AllowTeleport) {
+            updateManager.AddChatMessage("Teleporting is disabled on this server");
+            return;
+        }
+
+        if (request.TargetId == id || !_playerData.TryGetValue(request.TargetId, out var target)) {
+            updateManager.AddChatMessage("That player is not available");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(target.CurrentScene)) {
+            updateManager.AddChatMessage($"{target.Username} is not in a scene yet");
+            return;
+        }
+
+        Logger.Info($"Teleporting ({id}, {playerData.Username}) to ({target.Id}, {target.Username}) in {target.CurrentScene}");
+        updateManager.SetPlayerTeleport(target.CurrentScene, target.Position.X, target.Position.Y);
     }
 
     /// <summary>

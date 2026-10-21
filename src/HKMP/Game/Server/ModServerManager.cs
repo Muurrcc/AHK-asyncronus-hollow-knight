@@ -7,6 +7,7 @@ using Hkmp.Networking.Server;
 using Hkmp.Networking.SteamBridge;
 using Hkmp.Ui;
 using Modding;
+using Logger = Hkmp.Logging.Logger;
 
 namespace Hkmp.Game.Server;
 
@@ -132,6 +133,7 @@ internal class ModServerManager : ServerManager {
     /// <param name="modSaveFile">The deserialized ModSaveFile instance.</param>
     public void OnLoadLocal(ModSaveFile modSaveFile) {
         _loadedLocalSaveData = modSaveFile.ToServerSaveData();
+        Logger.Info($"OnLoadLocal: players in mod save: {_loadedLocalSaveData.PlayerSaveData.Count}");
     }
 
     /// <summary>
@@ -139,6 +141,10 @@ internal class ModServerManager : ServerManager {
     /// </summary>
     /// <returns>The ModSaveFile instance to serialize to file.</returns>
     public ModSaveFile OnSaveLocal() {
+        Logger.Info(
+            $"OnSaveLocal: server running: {IsStarted}, profileID: {(global::GameManager.instance ? global::GameManager.instance.profileID : -1)}, " +
+            $"players in server save: {ServerSaveData.PlayerSaveData.Count}"
+        );
         return ModSaveFile.FromServerSaveData(ServerSaveData);
     }
 }

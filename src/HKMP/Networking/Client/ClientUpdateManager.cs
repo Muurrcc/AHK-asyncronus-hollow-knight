@@ -381,6 +381,19 @@ internal class ClientUpdateManager : UdpUpdateManager<ServerUpdatePacket, Server
     }
 
     /// <summary>
+    /// Ask the server to teleport this player to another player.
+    /// </summary>
+    /// <param name="targetId">The ID of the player to teleport to.</param>
+    public void SetTeleportRequest(ushort targetId) {
+        lock (Lock) {
+            CurrentUpdatePacket.SetSendingPacketData(
+                ServerUpdatePacketId.PlayerTeleportRequest,
+                new PlayerTeleportRequest { TargetId = targetId }
+            );
+        }
+    }
+
+    /// <summary>
     /// Set a chat message in the current packet.
     /// </summary>
     /// <param name="message">The string message.</param>

@@ -47,6 +47,8 @@ internal class ClientUpdatePacket : UpdatePacket<ClientUpdatePacketId> {
                 return new PacketDataCollection<ChatMessage>();
             case ClientUpdatePacketId.SaveUpdate:
                 return new PacketDataCollection<SaveUpdate>();
+            case ClientUpdatePacketId.PlayerTeleport:
+                return new PlayerTeleport();
             default:
                 return new EmptyData();
         }

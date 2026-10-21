@@ -61,7 +61,7 @@ internal static class FileUtil {
         try {
             var serializedObj = JsonConvert.SerializeObject(obj, Formatting.Indented);
 
-            File.WriteAllText(filePath, serializedObj);
+            SafeFile.WriteAllTextAtomic(filePath, serializedObj);
         } catch (Exception e) {
             Logger.Warn($"Could not write file at path \"{filePath}\", exception:\n{e}");
         }

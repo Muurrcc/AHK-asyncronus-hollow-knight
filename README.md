@@ -5,14 +5,14 @@
 # AHK — Asyncronus Hollow Knight
 
 **Co-op for Hollow Knight with synced enemies, join-by-code over Steam and a one-click installer.**<br>
-Built on [HKMP](https://github.com/Extremelyd1/HKMP) · Hollow Knight 1.5.12459 (Unity 6) · Windows.
+Built on [HKMP](https://github.com/Extremelyd1/HKMP) · Hollow Knight 1.5.12459 (Unity 6) · Windows and Linux (Proton).
 
 [![Build & Test](https://github.com/Muurrcc/AHK-asyncronus-hollow-knight/actions/workflows/build.yml/badge.svg)](https://github.com/Muurrcc/AHK-asyncronus-hollow-knight/actions/workflows/build.yml)
 ![Hollow Knight](https://img.shields.io/badge/Hollow%20Knight-1.5.12459-2B3A4A?style=flat)
 ![Unity](https://img.shields.io/badge/Unity-6000.0.61-222C37?style=flat&logo=unity&logoColor=white)
 ![.NET](https://img.shields.io/badge/.NET-8-512BD4?style=flat&logo=dotnet&logoColor=white)
-![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4?style=flat&logo=windows&logoColor=white)
-![Version](https://img.shields.io/badge/version-1.1.1-C6613F?style=flat)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-0078D4?style=flat&logo=windows&logoColor=white)
+![Version](https://img.shields.io/badge/version-1.2.0-C6613F?style=flat)
 ![License](https://img.shields.io/badge/license-LGPL--2.1-blue?style=flat)
 
 ![Installer](docs/screenshots/installer-welcome.png)
@@ -27,6 +27,7 @@ Built on [HKMP](https://github.com/Extremelyd1/HKMP) · Hollow Knight 1.5.12459 
 - [Preview](#preview)
 - [Installation](#installation)
 - [Uninstalling](#uninstalling)
+- [Linux](#linux)
 - [Playing](#playing)
 - [How it works](#how-it-works)
 - [Tech stack](#tech-stack)
@@ -38,12 +39,18 @@ Built on [HKMP](https://github.com/Extremelyd1/HKMP) · Hollow Knight 1.5.12459 
 
 ## Features
 
-- **Synced enemies.** If one player hits or kills an enemy, the other sees it. Health, soul and equipped charms are per player; world progress (doors, dead enemies, defeated bosses) is shared.
+- **Synced enemies.** If one player hits or kills an enemy, the other sees it. Health, soul, equipped charms, grubs and tarros are per player; world progress (doors, dead enemies, defeated bosses) is shared.
+- **Enemy health scales with players.** Enemies get more health as players connect (`EnemyHealthPercentPerExtraPlayer`, default 50: x1.5 with two players; `0` disables it). It is implemented by dividing the damage they receive.
 - **Join by code over Steam.** The host shares a short code (`XXXX-XXXX`); friends join through Steam's relay network. No port forwarding, no VPN. Optional password.
 - **MSI installer that also updates.** Run a newer MSI over an old one to update. Uninstall from *Apps* or the Start menu; the original game files are restored.
 - **Coexists with other mods.** It only adds `Managed\Mods\Asyncronus`; other mods and your saves are never touched.
 - **No game files in this repository.** The installer applies a binary patch to *your* `Assembly-CSharp.dll` after verifying its hash.
 - **Classic IP + port** (UDP 26950) is still available as a fallback.
+- **Teleport.** A TP button in the pause menu and the `/tp [name]` command. Controlled by the server setting `AllowTeleport` (on by default).
+- **Arena and wave doors wait for everyone.** They only close once *all* players in the scene have entered (`ArenaWaitForAllPlayers`, on by default).
+- **Rotating save backups.** Before applying the host's state, the mod keeps three rotating backups of each `user*.dat` (`user1.dat.hkmp-backup-*`), and all save writes are atomic.
+- **Copy code button** for the join code.
+- **Linux support.** Runs through Steam with Proton (recommended) or the native build. Not tested on real Linux yet; see [Linux](#linux).
 
 ## Preview
 
@@ -61,11 +68,13 @@ The installer UI is currently in Spanish.
 
 Everyone who plays together must use the **same version**.
 
+> **1.2.0 changes the network protocol.** Players on other versions cannot join each other. Update everyone to 1.2.0 together.
+
 ### Requirements
 
 | | |
 |---|---|
-| OS | Windows 10 / 11 |
+| OS | Windows 10 / 11, or Linux with Steam + Proton ([Linux](#linux)) |
 | Game | Hollow Knight on Steam, build **1.5.12459** (Unity 6), no beta branch |
 | Network | Steam running (for join-by-code) |
 
@@ -83,6 +92,39 @@ This game version needs a different Modding API than the one Lumafly installs, s
 
 Use **Uninstall Asyncronus** in the Start menu, or Settings → Apps. The original `Assembly-CSharp.dll` and the files the installer added are restored from `hollow_knight_Data\Managed-vanilla-backup`. Your saves and other mods are left alone. *Verify integrity of game files* in Steam also works.
 
+## Linux
+
+Asyncronus works on Linux through Steam with **Proton** (recommended: Proton 9+ or Experimental; Steam Deck included) or the native Linux build.
+
+> **Status: not tested on a real Linux machine yet.** The installer was verified end to end on Windows (patch, hook generation, install, uninstall, byte-identical restore). Nothing has been run inside Hollow Knight on Linux.
+
+**Requirements:** Hollow Knight 1.5.12459 on Steam (*Betas: None*), Steam installed and logged in, a .NET 8+ runtime or SDK (only needed while installing), `bash`, `sha256sum` and `tar`.
+
+**Install** (with the game closed, from the `Asyncronus-linux-X.Y.Z.tar.gz` release):
+
+```bash
+tar xzf Asyncronus-linux-*.tar.gz
+cd Asyncronus-linux-*/
+./install.sh      # add --game-dir "/path/to/Hollow Knight" if it is not found
+```
+
+The installer checks the hash of `Assembly-CSharp.dll` before changing anything. If it does not match the Windows build (for example, on the native Linux build), it stops and asks you to use Proton. It backs up the originals and reverts on failure.
+
+**Launch:** start Hollow Knight from Steam as usual. No launch options are needed. **Start Multiplayer** should appear in the main menu.
+
+**Host and join:** the same as on Windows, with Steam open and logged in on both sides and the same mod version.
+
+**Uninstall:** `./uninstall.sh` restores the original `Assembly-CSharp.dll` and removes the added files. It does not touch other mods or your saves.
+
+**Troubleshooting:**
+- *Game not found:* pass `--game-dir`. Flatpak Steam needs access to libraries outside your home.
+- *.NET not found:* install .NET 8 or newer (on Steam Deck, use the user install in `~/.dotnet`).
+- *Version mismatch:* verify integrity of game files and set Betas to *None*. On the native build, force Proton.
+- *No Start Multiplayer:* check `ModLog.txt` for `Modding API: 0.0.0.0-77` and the Asyncronus mod.
+- *Copy-code button does nothing:* Unity's clipboard needs X11 or XWayland. Type the code by hand.
+
+Full guide (install options, file locations, error logs, technical notes): [docs/LINUX.md](docs/LINUX.md).
+
 ## Playing
 
 1. **Host:** Start Multiplayer → *Start Hosting*. Your code is shown (and copied to the clipboard / printed in chat).
@@ -90,6 +132,11 @@ Use **Uninstall Asyncronus** in the Start menu, or Settings → Apps. The origin
 3. Fallback: IP + port. A dedicated server (`HKMPServer`) can be built from `src/HKMPServer`.
 
 Server rules (PvP, damage, names) live in the server settings; `FullSynchronisation` must stay `true` for enemy sync.
+
+New server settings in 1.2.0:
+- `AllowTeleport` (default on): enables the TP button and `/tp [name]`.
+- `EnemyHealthPercentPerExtraPlayer` (default 50, `0` disables): scales enemy health with connected players.
+- `ArenaWaitForAllPlayers` (default on): arena and wave doors close only after every player in the scene has entered.
 
 ## How it works
 
@@ -144,6 +191,7 @@ dotnet test tests/HKMP.SteamBridge.Tests
 - **Cannot join with a code:** both players need Steam open and logged in, the same mod version, and the host must be in *Start Hosting*. Wrong password and full host are reported in the menu.
 - **IP connection times out:** UDP gives no errors. Check firewall/router, or use the code instead.
 - **Installer refuses to run:** the game must be closed and be build 1.5.12459 (see [Requirements](#requirements)).
+- **Linux problems** (install, launch, host, uninstall): see the [Linux guide](docs/LINUX.md).
 
 ## Known limitations
 
@@ -152,6 +200,9 @@ dotnet test tests/HKMP.SteamBridge.Tests
 - Enemies with no saved state respawn when re-entering an empty room, as in the base game.
 - Abilities and maps are per player (HKMP design).
 - Banning by IP is not useful for bridged players: they all arrive from `127.0.0.1`. Ban by key instead.
+- Teleport between scenes uses the `dreamGate` entrance, which has not been verified.
+- Waiting for all players before closing doors (`ArenaWaitForAllPlayers`) does not cover the Colosseum or bosses that start when hit.
+- Linux support has not been tested on a real Linux machine. See [docs/LINUX.md](docs/LINUX.md#not-verified).
 
 ## Credits & license
 

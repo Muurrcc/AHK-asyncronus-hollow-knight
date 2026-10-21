@@ -98,4 +98,9 @@ internal enum ClientUpdatePacketId {
     /// Value in the save file has updated.
     /// </summary>
     SaveUpdate = 18,
+
+    /// <summary>
+    /// Teleport the receiving player to the given scene and position.
+    /// </summary>
+    PlayerTeleport = 19,
 }

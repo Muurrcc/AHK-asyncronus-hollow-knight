@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <!-- Unit tests for the pure (game and Steam independent) part of the Steam bridge. The sources are compiled
+    <!-- Unit tests for the pure (game and Steam independent) part of the Steam bridge and of some
+         gameplay rules (enemy health scaling, arena entry). The sources are compiled
          directly into this assembly, so no game assemblies are needed. -->
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -25,6 +26,13 @@
         <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeClientCore.cs" Link="Linked\SteamBridgeClientCore.cs" />
         <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeWorker.cs" Link="Linked\SteamBridgeWorker.cs" />
         <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeSleep.cs" Link="Linked\SteamBridgeSleep.cs" />
+        <!-- Pure gameplay logic (enemy health scaling, arena entry rules) -->
+        <Compile Include="$(HkmpSrc)\Game\Client\Entity\EnemyHealthScaling.cs" Link="Linked\EnemyHealthScaling.cs" />
+        <Compile Include="$(HkmpSrc)\Game\Client\ArenaEntryRules.cs" Link="Linked\ArenaEntryRules.cs" />
+        <Compile Include="$(HkmpSrc)\Game\Client\TeleportTargetSelector.cs" Link="Linked\TeleportTargetSelector.cs" />
+        <Compile Include="$(HkmpSrc)\Util\SafeFile.cs" Link="Linked\SafeFile.cs" />
+        <Compile Include="$(HkmpSrc)\Util\SaveFileFormat.cs" Link="Linked\SaveFileFormat.cs" />
+        <None Include="$(HkmpSrc)\Resource\save-data.json" Link="save-data.json" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <ItemGroup>

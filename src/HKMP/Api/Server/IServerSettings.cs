@@ -119,4 +119,21 @@ public interface IServerSettings {
     /// The damage that a Sharp Shadow dash from others players deals to the local player.
     /// </summary>
     public byte SharpShadowDamage { get; }
+
+    /// <summary>
+    /// Whether players are allowed to teleport to other players.
+    /// </summary>
+    public bool AllowTeleport { get; }
+
+    /// <summary>
+    /// Extra enemy health, in percent of the base health, for each connected player beyond the first. With the
+    /// default of 50 an enemy has 1.5x its health with 2 players, 2x with 3 players, etc. 0 disables the scaling.
+    /// </summary>
+    public byte EnemyHealthPercentPerExtraPlayer { get; }
+
+    /// <summary>
+    /// Whether arenas with battle gates (wave rooms, traps, boss arenas) only start and close their gates once
+    /// every player in the scene is inside the arena trigger.
+    /// </summary>
+    public bool ArenaWaitForAllPlayers { get; }
 }

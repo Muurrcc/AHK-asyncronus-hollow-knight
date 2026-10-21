@@ -591,6 +591,21 @@ internal class ServerUpdateManager : UdpUpdateManager<ClientUpdatePacket, Client
     }
 
     /// <summary>
+    /// Tell the receiving player to teleport to the given scene and position.
+    /// </summary>
+    /// <param name="sceneName">The scene name.</param>
+    /// <param name="x">The X position.</param>
+    /// <param name="y">The Y position.</param>
+    public void SetPlayerTeleport(string sceneName, float x, float y) {
+        lock (Lock) {
+            CurrentUpdatePacket.SetSendingPacketData(
+                ClientUpdatePacketId.PlayerTeleport,
+                new PlayerTeleport { SceneName = sceneName, X = x, Y = y }
+            );
+        }
+    }
+
+    /// <summary>
     /// Add a chat message to the current packet.
     /// </summary>
     /// <param name="message">The string message.</param>

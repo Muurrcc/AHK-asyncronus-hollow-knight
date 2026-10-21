@@ -231,6 +231,9 @@ internal class SaveDataMapping {
         var set = new HashSet<string> {
             "maxHealthBase", "heartPieces", "MPReserveMax", "vesselFragments", "soulLimited",
             "geo", "geoPool", "nailDamage",
+            // Grubs are individual: each player rescues their own (jars are per player too, see save-data.json)
+            "grubsCollected", "scenesGrubRescued", "grubRewards", "finalGrubRewardCollected", "fatGrubKing",
+            "hasPinGrub",
             "charmSlots", "charmSlotsFilled", "equippedCharms", "overcharmed",
             "fragileHealth_unbreakable", "fragileGreed_unbreakable", "fragileStrength_unbreakable",
             "respawnScene", "respawnMarkerName", "respawnType", "mapZone",

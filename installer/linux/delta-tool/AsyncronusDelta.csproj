@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Portable (net8) wrapper around the SAME Delta.cs used by the Windows installer. Linux only needs "apply" and "sha256". -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>AsyncronusDelta</AssemblyName>
+    <RootNamespace>Asyncronus.Setup</RootNamespace>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RollForward>LatestMajor</RollForward>
+    <DebugType>none</DebugType>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\Asyncronus.Setup\Core\Delta.cs" Link="Delta.cs" />
+  </ItemGroup>
+</Project>

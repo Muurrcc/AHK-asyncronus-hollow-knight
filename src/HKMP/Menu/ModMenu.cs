@@ -395,6 +395,34 @@ internal class ModMenu {
                                     ReflectionHelper.SetProperty(_localServerSettings, name, newValue);
                                 }
                             };
+                        } else if (type == typeof(byte)) {
+                            // Other byte settings (percentages): 0 through 200 in steps of 10. Values set by command
+                            // that are not a multiple of 10 are shown rounded down.
+                            const int step = 10;
+                            const int count = 21;
+                            options = new string[count];
+                            for (var i = 0; i < count; i++) {
+                                options[i] = (i * step).ToString();
+                            }
+
+                            saver = i => {
+                                ReflectionHelper.SetProperty(_localServerSettings, name, (byte) (i * step));
+                                HandleUpdateServerSettings();
+                            };
+                            loader = () => System.Math.Min(
+                                ReflectionHelper.GetProperty<ServerSettings, byte>(_localServerSettings, name) / step,
+                                count - 1
+                            );
+
+                            serverSettingsChangedAction = (newSettings, horizontalOptionToChange) => {
+                                var oldValue = ReflectionHelper.GetProperty<ServerSettings, byte>(_localServerSettings, name);
+                                var newValue = ReflectionHelper.GetProperty<ServerSettings, byte>(newSettings, name);
+
+                                if (oldValue != newValue) {
+                                    horizontalOptionToChange.SetOptionTo(System.Math.Min(newValue / step, count - 1));
+                                    ReflectionHelper.SetProperty(_localServerSettings, name, newValue);
+                                }
+                            };
                         } else {
                             throw new InvalidOperationException(
                                 $"Could not make menu entry for unknown field type: {type}, for field: {name}");

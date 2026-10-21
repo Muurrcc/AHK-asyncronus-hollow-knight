@@ -94,6 +94,12 @@ internal class HealthManagerComponent : EntityComponent {
     private int? _syncedHp;
 
     /// <summary>
+    /// Fractional damage carried over by the enemy health scaling (scene host only), see
+    /// <see cref="EnemyHealthScaling"/>.
+    /// </summary>
+    private float _scaledDamageRemainder;
+
+    /// <summary>
     /// Whether this entity is known to be dead (through local death or networked death).
     /// </summary>
     public bool IsDead { get; private set; }
@@ -123,6 +129,7 @@ internal class HealthManagerComponent : EntityComponent {
         On.HealthManager.Die += HealthManagerOnDie;
         On.HealthManager.Hit += HealthManagerOnHit;
         On.SpellFluke.DoDamage += SpellFlukeOnDoDamage;
+        On.HealthManager.SubtractHealth += HealthManagerOnSubtractHealth;
         MonoBehaviourUtil.Instance.OnUpdateEvent += OnUpdate;
     }
 
@@ -187,6 +194,39 @@ internal class HealthManagerComponent : EntityComponent {
         OtherHostHitsByEntity.TryGetValue(EntityId, out var other);
         OtherHostHitsByEntity[EntityId] = (other.Count + 1, other.Damage + damage);
         orig(self, obj, upwardRecursionAmount, burst);
+    }
+
+    /// <summary>
+    /// Enemy health scaling with the number of connected players. Every damage path of the health manager (hits,
+    /// extra damage, flukes) ends in SubtractHealth, so the damage is scaled here, only for the real (host) health
+    /// manager on the scene host. The resulting HP is synchronised as usual, so scene clients and the server only
+    /// see vanilla-unit HP. See <see cref="EnemyHealthScaling"/>.
+    /// </summary>
+    private void HealthManagerOnSubtractHealth(On.HealthManager.orig_SubtractHealth orig, HealthManager self, int damageDealt) {
+        if (self != _healthManager.Host || IsControlled || damageDealt <= 0) {
+            orig(self, damageDealt);
+            return;
+        }
+
+        var multiplier = EnemyHealthScaling.CurrentMultiplier;
+        if (multiplier <= 1f) {
+            _scaledDamageRemainder = 0f;
+            orig(self, damageDealt);
+            return;
+        }
+
+        // With damageOverride the vanilla method always subtracts 1, so scale that 1 instead
+        var damage = self.damageOverride ? 1 : damageDealt;
+        var scaled = EnemyHealthScaling.ScaleDamage(damage, multiplier, ref _scaledDamageRemainder);
+
+        Logger.Info(
+            $"HKMP_SYNC scaled damage: entity {EntityId} '{self.name}' dmg {damage} -> {scaled} (x{multiplier:0.##} for {EnemyHealthScaling.CurrentPlayerCount} players) hp {self.hp} -> {self.hp - scaled}");
+
+        if (scaled <= 0) {
+            return;
+        }
+
+        orig(self, scaled);
     }
 
     /// <summary>
@@ -789,6 +829,7 @@ internal class HealthManagerComponent : EntityComponent {
         On.HealthManager.Die -= HealthManagerOnDie;
         On.HealthManager.Hit -= HealthManagerOnHit;
         On.SpellFluke.DoDamage -= SpellFlukeOnDoDamage;
+        On.HealthManager.SubtractHealth -= HealthManagerOnSubtractHealth;
         MonoBehaviourUtil.Instance.OnUpdateEvent -= OnUpdate;
     }
 }

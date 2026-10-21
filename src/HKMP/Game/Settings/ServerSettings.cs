@@ -51,6 +51,21 @@ public class ServerSettings : IServerSettings, IEquatable<ServerSettings> {
     public bool AllowParries { get; set; } = true;
 
     /// <inheritdoc />
+    [SettingAlias("teleport", "tp")]
+    [ModMenuSetting("Teleport", "Whether players can teleport to other players (/tp and the pause menu button)")]
+    public bool AllowTeleport { get; set; } = true;
+
+    /// <inheritdoc />
+    [SettingAlias("enemyhealth", "enemyhp", "hpperplayer")]
+    [ModMenuSetting("Enemy Health Per Player", "Extra enemy health (%) for each connected player beyond the first")]
+    public byte EnemyHealthPercentPerExtraPlayer { get; set; } = 50;
+
+    /// <inheritdoc />
+    [SettingAlias("arenawait", "waitforall")]
+    [ModMenuSetting("Arenas Wait For All", "Arena gates only close once every player in the scene is inside")]
+    public bool ArenaWaitForAllPlayers { get; set; } = true;
+
+    /// <inheritdoc />
     [SettingAlias("naildmg")]
     [ModMenuSetting("Nail Damage", "The number of masks of damage that a player's nail swing deals")]
     public byte NailDamage { get; set; } = 1;

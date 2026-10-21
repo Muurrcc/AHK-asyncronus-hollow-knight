@@ -50,6 +50,9 @@ internal static class DevAutoConnect {
         // Steam bridge tests (no-op without -hkmp-steam-pair / -hkmp-steam-host-test)
         var steamPairPort = DevSteamBridgeTest.TryStart(uiManager.SteamBridge);
 
+        // Save/quit test of a hosted game (no-op without -hkmp-test-save)
+        DevSaveTest.TryStart(uiManager, netClient);
+
         var openMenu = HasFlag("-hkmp-menu") || Environment.GetEnvironmentVariable("HKMP_MENU") == "1";
         var connect = GetOption("-hkmp-connect") ?? Environment.GetEnvironmentVariable("HKMP_CONNECT");
         var username = GetOption("-hkmp-name") ?? Environment.GetEnvironmentVariable("HKMP_NAME");

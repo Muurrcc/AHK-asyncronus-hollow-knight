@@ -43,3 +43,4 @@ Requirements: .NET SDK 8+, WiX (`dotnet tool install --global wix --version 6.0.
 - `assets/` — images and icon (light variants; see `assets/THEME.md`).
 - `patches/` — the binary delta.
 - `THIRD-PARTY-NOTICES.md` — third-party licenses.
+- `linux/` — Linux installer (`install.sh`, `uninstall.sh`, `make-package.sh`, net8 delta tool); see [docs/LINUX.md](../docs/LINUX.md).

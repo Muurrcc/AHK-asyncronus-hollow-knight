@@ -1,3 +1,4 @@
+using System.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -543,6 +544,13 @@ internal class SaveManager {
     /// Called every unity update. Used to check for changes in non-primitive variables in the PlayerData.
     /// </summary>
     private void OnUpdateCompounds() {
+        // Same guards as OnUpdatePlayerData: while leaving to / sitting in the main menu PlayerData is being reset or
+        // swapped for another save, which must never be mistaken for in-game changes
+        var gameManager = global::GameManager.instance;
+        if (PlayerData.instance == null || !gameManager || gameManager.gameState == GameState.MAIN_MENU) {
+            return;
+        }
+
         void CheckUpdates<TVar, TCheck>(
             List<string> variableNames,
             Dictionary<string, TCheck> checkDict,
@@ -690,6 +698,24 @@ internal class SaveManager {
     }
 
     /// <summary>
+    /// Make a rolling backup of the local vanilla save files before the synchronised world state is applied to the
+    /// loaded save (which the game then writes to disk on the next save/quit). Lets the player recover the save as
+    /// it was before joining.
+    /// </summary>
+    private static void BackupLocalSaves() {
+        try {
+            foreach (var file in Directory.GetFiles(Application.persistentDataPath, "user*.dat")) {
+                var backup = SafeFile.BackupFile(file);
+                if (backup != null) {
+                    Logger.Info($"Backed up local save before joining: {backup}");
+                }
+            }
+        } catch (Exception e) {
+            Logger.Warn($"Could not back up local saves: {e.Message}");
+        }
+    }
+
+    /// <summary>
     /// Set the save data from the given CurrentSave by overriding all values.
     /// </summary>
     /// <param name="currentSave">The save data to set.</param>
@@ -700,6 +726,8 @@ internal class SaveManager {
         }
         
         Logger.Info("Received current save, updating...");
+
+        BackupLocalSaves();
 
         foreach (var keyValuePair in currentSave.SaveData) {
             var index = keyValuePair.Key;
