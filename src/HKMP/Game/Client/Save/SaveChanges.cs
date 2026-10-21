@@ -13,6 +13,65 @@ namespace Hkmp.Game.Client.Save;
 /// </summary>
 internal class SaveChanges {
     /// <summary>
+    /// Apply a received change of a shared max value (maxHealthBase: masks, MPReserveMax: soul vessels) to the
+    /// local character right away: keep the derived local values (maxHealth, health, MPReserve) coherent and
+    /// refresh the HUD, like picking up the mask or vessel would, without healing damage already taken.
+    /// </summary>
+    /// <param name="name">The name of the PlayerData entry.</param>
+    /// <param name="oldValue">The local value before the update.</param>
+    /// <param name="newValue">The received value.</param>
+    public void ApplySharedMaxChange(string name, int oldValue, int newValue) {
+        if (oldValue == newValue) {
+            return;
+        }
+
+        var pd = PlayerData.instance;
+        var hc = HeroController.instance;
+        var gm = global::GameManager.instance;
+
+        if (name == "maxHealthBase") {
+            var delta = newValue - oldValue;
+            var oldMax = pd.maxHealth;
+            var oldHealth = pd.health;
+            // Joni's Blessing keeps maxHealth at 1, vanilla AddToMaxHealth does not change it either
+            if (!pd.equippedCharm_27) {
+                var newMax = System.Math.Max(1, oldMax + delta);
+                pd.maxHealth = newMax;
+                pd.health = SharedProgressRules.HealthAfterMaxHealthChange(oldHealth, oldMax, newMax);
+            }
+
+            Logger.Info(
+                $"Shared masks: maxHealthBase {oldValue} -> {newValue}, maxHealth {oldMax} -> {pd.maxHealth}, " +
+                $"health {oldHealth} -> {pd.health}"
+            );
+
+            if (hc) {
+                // Same HUD events a mask pickup uses: add the new mask, then redraw the filled masks
+                PlayMakerFSM.BroadcastEvent("MAX HP UP");
+                hc.AddHealth(0);
+            }
+
+            return;
+        }
+
+        if (name == "MPReserveMax") {
+            var oldReserve = pd.MPReserve;
+            pd.MPReserve = SharedProgressRules.ReserveAfterMaxChange(oldReserve, newValue);
+            Logger.Info(
+                $"Shared soul vessels: MPReserveMax {oldValue} -> {newValue}, MPReserve {oldReserve} -> {pd.MPReserve}"
+            );
+
+            if (hc && gm) {
+                // Same HUD events a vessel pickup uses: add the new vessel, then redraw the reserve soul
+                PlayMakerFSM.BroadcastEvent("NEW SOUL ORB");
+                if (gm.soulVessel_fsm) {
+                    gm.soulVessel_fsm.SendEvent("MP RESERVE UP");
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// Apply a change in player data from a save update for the given name immediately. This checks whether
     /// the local player is in a scene where the changes in player data have an effect on the environment.
     /// For example, a breakable wall that also opens up in another scene or a stag station being bought.
@@ -483,6 +542,11 @@ internal class SaveChanges {
             fsm.SetState("Audio");
         }
 
+        if (GrubJarRules.IsGrubJar(itemKey.Id)) {
+            ApplyGrubBottleBroken(itemKey, currentScene);
+            return;
+        }
+
         if (itemKey.Id == "Bone Gate" && itemKey.SceneName == currentScene) {
             var go = GameObject.Find(itemKey.Id);
             if (go == null) {
@@ -496,6 +560,45 @@ internal class SaveChanges {
 
             fsm.SetState("Open Audio");
         }
+    }
+
+    /// <summary>
+    /// Break, in the current scene, the grub jar that another player just broke: the jar shatters and the grub is
+    /// freed (with the vanilla effects), without counting the rescue again (the counters
+    /// <c>grubsCollected</c>/<c>scenesGrubRescued</c> arrive as their own save updates).
+    /// </summary>
+    /// <param name="itemKey">The persistent item key of the jar.</param>
+    /// <param name="currentScene">The name of the current scene.</param>
+    private static void ApplyGrubBottleBroken(PersistentItemKey itemKey, string currentScene) {
+        if (global::GameManager.GetBaseSceneName(currentScene) != itemKey.SceneName) {
+            return;
+        }
+
+        foreach (var fsm in Object.FindObjectsOfType<PlayMakerFSM>()) {
+            if (fsm.FsmName != "Bottle Control" || fsm.gameObject.name != itemKey.Id ||
+                fsm.gameObject.scene != UnityEngine.SceneManagement.SceneManager.GetActiveScene()) {
+                continue;
+            }
+
+            // Mimic jars have a different FSM (the mimic enemy comes out and is synchronised as an entity): only
+            // the plain jar flow is applied live, the others show up broken when the scene is entered again
+            var heroRange = fsm.FsmVariables.FindFsmBool("Hero Range");
+            if (heroRange == null || fsm.Fsm.GetState("Shatter") == null) {
+                Logger.Info($"Grub jar {itemKey} has no plain jar FSM, not breaking it live");
+            } else if (GrubJarRules.ShouldShatterRemoteBreak(fsm.ActiveStateName)) {
+                Logger.Info($"Breaking grub jar {itemKey} because another player broke it (state {fsm.ActiveStateName})");
+                // The shatter state only works when the hero is in range and counts the rescue: skip both
+                heroRange.Value = true;
+                fsm.RemoveFirstAction<IncrementPlayerDataInt>("Shatter");
+                fsm.SetState("Shatter");
+            } else {
+                Logger.Info($"Grub jar {itemKey} is in state {fsm.ActiveStateName}, not breaking it again");
+            }
+
+            return;
+        }
+
+        Logger.Info($"Could not find intact grub jar for {itemKey} in the scene");
     }
 
     /// <summary>

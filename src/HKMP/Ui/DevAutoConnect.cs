@@ -56,6 +56,12 @@ internal static class DevAutoConnect {
         // Teleport test (no-op without -hkmp-test-tp)
         DevTeleportTest.TryStart(uiManager, netClient);
 
+        // Grub jar sync test (no-op without -hkmp-test-grub)
+        DevGrubTest.TryStart(netClient);
+
+        // Shared progress test: masks, soul vessels, spells, story (no-op without -hkmp-test-shared)
+        DevSharedProgressTest.TryStart(netClient);
+
         var openMenu = HasFlag("-hkmp-menu") || Environment.GetEnvironmentVariable("HKMP_MENU") == "1";
         var connect = GetOption("-hkmp-connect") ?? Environment.GetEnvironmentVariable("HKMP_CONNECT");
         var username = GetOption("-hkmp-name") ?? Environment.GetEnvironmentVariable("HKMP_NAME");

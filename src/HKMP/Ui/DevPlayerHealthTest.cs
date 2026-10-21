@@ -355,13 +355,7 @@ internal static partial class DevEntityTest {
             (b, a) => a.Health == a.MaxHealth && !a.Dead && a.Shade == HpScene && a.Geo == 0 && a.GeoPool == b.Geo && a.Scene == HpScene
                 ? null
                 : $"expected respawn at the {HpScene} bench with full health, shadeScene {HpScene}, geo 0, geoPool {b.Geo}", 4f);
-        yield return HpStep("mask-H", true, () => {
-                HeroController.instance.AddToMaxHealth(1);
-                return WaitSeconds(2f);
-            },
-            (b, a) => a.MaxHealthBase == b.MaxHealthBase + 1 && a.MaxHealth == b.MaxHealth + 1 && a.Health == a.MaxHealth
-                ? null
-                : $"expected maxHealthBase {b.MaxHealthBase + 1} maxHealth {b.MaxHealth + 1} and full health");
+        // Masks are shared progress now (the observer gets the mask too): tested in DevSharedProgressTest
         yield return HpStep("reconnect-H", true, ReconnectLocal,
             (b, a) => a.MaxHealthBase == b.MaxHealthBase && a.MaxHealth == b.MaxHealth && a.Health == a.MaxHealth &&
                       a.GeoPool == b.GeoPool && a.Shade == b.Shade && a.Geo == b.Geo && !a.Dead

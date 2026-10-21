@@ -21,8 +21,11 @@ namespace Hkmp.Game.Client;
 /// <para>A scene change uses the game's own hazard respawn entry: <c>GameManager.hazardRespawningHero</c> plus
 /// <c>PlayerData.hazardRespawnLocation</c> make the game place the hero on the ground at the target position, fade
 /// the scene in and give control back (<c>HeroController.HazardRespawn</c>), without needing a transition gate of
-/// the target scene. The game is always unpaused first and, if anything does not end in a playable state, the full
-/// control of the hero is restored (<see cref="Recover"/>).</para>
+/// the target scene. When the new scene is set up the landing spot is checked: if the target was in the air above
+/// spikes, acid or a bottomless pit, the closest safe hazard respawn marker of the scene is used instead (otherwise
+/// the hero would land in the hazard and respawn there again and again). The game is always unpaused first and, if
+/// anything does not end in a playable state, the full control of the hero is restored (<see cref="Recover"/>), never
+/// in the middle of a scene load.</para>
 /// </summary>
 internal class TeleportManager {
     /// <summary>
@@ -31,9 +34,9 @@ internal class TeleportManager {
     private const float WaitForStateTimeout = 3f;
 
     /// <summary>
-    /// Seconds to wait for the target scene to load.
+    /// Seconds to wait for the target scene to load (slow disks can take long).
     /// </summary>
-    private const float SceneLoadTimeout = 30f;
+    private const float SceneLoadTimeout = 90f;
 
     /// <summary>
     /// Seconds to wait for the hero to have control again after arriving.
@@ -43,7 +46,23 @@ internal class TeleportManager {
     /// <summary>
     /// Hard limit for a whole teleport, after which it is aborted and control restored.
     /// </summary>
-    private const float WatchdogTimeout = 45f;
+    private const float WatchdogTimeout = 120f;
+
+    /// <summary>
+    /// Seconds a deferred recovery waits for a running scene load to end before restoring anyway.
+    /// </summary>
+    private const float RecoverTransitionTimeout = 120f;
+
+    /// <summary>
+    /// Distance of the ground search below a landing spot (HeroController.FIND_GROUND_POINT_DISTANCE_EXT, used by
+    /// the hazard respawn).
+    /// </summary>
+    private const float GroundSearchDistance = 50f;
+
+    /// <summary>
+    /// Layer mask of the terrain (layer 8), as used by HeroController.FindGroundPoint.
+    /// </summary>
+    private const int TerrainMask = 256;
 
     /// <summary>
     /// Private field of GameManager that makes EnterHero do a hazard respawn.
@@ -71,6 +90,47 @@ internal class TeleportManager {
     /// </summary>
     private int _teleportNumber;
 
+    /// <summary>
+    /// Realtime (Time.realtimeSinceStartup) of the last request sent, or negative if none.
+    /// </summary>
+    private float _lastRequestTime = -1000f;
+
+    /// <summary>
+    /// Whether the last request has not been answered yet.
+    /// </summary>
+    private bool _awaitingAnswer;
+
+    /// <summary>
+    /// Name of the player of the last request (for the arrival message).
+    /// </summary>
+    private string _pendingTargetName;
+
+    /// <summary>
+    /// Scene of the scene change of the running teleport, or null.
+    /// </summary>
+    private string _arrivalScene;
+
+    /// <summary>
+    /// Target of the scene change of the running teleport.
+    /// </summary>
+    private Vector2 _arrivalTarget;
+
+    /// <summary>
+    /// Whether the landing spot of the scene change still has to be checked when the scene is set up (see
+    /// <see cref="ResolveArrival"/>).
+    /// </summary>
+    private bool _landingPending;
+
+    /// <summary>
+    /// Whether the landing spot of the last teleport was moved to a safe spot.
+    /// </summary>
+    private bool _landingMoved;
+
+    /// <summary>
+    /// Whether HKMP was told that we entered the scene of the running teleport.
+    /// </summary>
+    private bool _enterSignalled;
+
     public TeleportManager(
         NetClient netClient,
         Dictionary<ushort, ClientPlayerData> playerData,
@@ -80,6 +140,16 @@ internal class TeleportManager {
         _playerData = playerData;
         _serverSettings = serverSettings;
         Instance = this;
+
+        // Check the landing spot once the target scene is set up, before the game places the hero there
+        On.GameManager.BeginScene += (orig, self) => {
+            ResolveArrival("BeginScene");
+            orig(self);
+        };
+        On.HeroController.HazardRespawn += (orig, self) => {
+            ResolveArrival("HazardRespawn");
+            return orig(self);
+        };
     }
 
     /// <summary>
@@ -93,9 +163,26 @@ internal class TeleportManager {
     internal IEnumerable<ClientPlayerData> DevPlayers => _playerData.Values;
 
     /// <summary>
+    /// Number of teleports started (used by the development test).
+    /// </summary>
+    internal static int DevStartedCount { get; private set; }
+
+    /// <summary>
     /// Whether teleporting is possible right now (connected and allowed by the server).
     /// </summary>
     public bool IsAvailable => _netClient.IsConnected && _serverSettings.AllowTeleport;
+
+    /// <summary>
+    /// Show a message to the player (and log it).
+    /// </summary>
+    private static void Say(string message) {
+        Logger.Info($"Teleport message: {message}");
+        try {
+            UiManager.InternalChatBox.AddMessage(message);
+        } catch (Exception e) {
+            Logger.Warn($"Teleport: could not show message: {e.Message}");
+        }
+    }
 
     /// <summary>
     /// Request a teleport to the next other player (cycles through the players on repeated calls) or, if a name is
@@ -108,7 +195,27 @@ internal class TeleportManager {
         }
 
         if (!_serverSettings.AllowTeleport) {
-            UiManager.InternalChatBox.AddMessage("Teleporting is disabled on this server");
+            Say("Teleporting is disabled on this server");
+            return;
+        }
+
+        var now = Time.realtimeSinceStartup;
+        var throttle = TeleportRules.ThrottleReason(_busy, now - _lastRequestTime, _awaitingAnswer);
+        if (throttle != null) {
+            Say($"Teleport ignored: {throttle}");
+            return;
+        }
+
+        string blocked;
+        try {
+            blocked = TeleportRules.RequestBlockReason(Snapshot(), SceneUtil.GetCurrentSceneName());
+        } catch (Exception e) {
+            Logger.Warn($"Teleport: could not check the state: {e.Message}");
+            blocked = null;
+        }
+
+        if (blocked != null) {
+            Say($"Can't teleport right now: {blocked}");
             return;
         }
 
@@ -117,7 +224,7 @@ internal class TeleportManager {
         string targetName;
         if (string.IsNullOrWhiteSpace(name)) {
             if (!TeleportTargetSelector.TryPickNext(players, _lastPickedId, out var picked)) {
-                UiManager.InternalChatBox.AddMessage("There are no other players");
+                Say("There are no other players to teleport to");
                 return;
             }
 
@@ -125,7 +232,7 @@ internal class TeleportManager {
             targetName = picked.Name;
         } else {
             if (!TeleportTargetSelector.TryFindByName(players, name, out targetId)) {
-                UiManager.InternalChatBox.AddMessage($"No unique player found for \"{name}\"");
+                Say($"No unique player found for \"{name}\"");
                 return;
             }
 
@@ -133,7 +240,10 @@ internal class TeleportManager {
         }
 
         _lastPickedId = targetId;
-        UiManager.InternalChatBox.AddMessage($"Teleporting to {targetName}...");
+        _lastRequestTime = now;
+        _awaitingAnswer = true;
+        _pendingTargetName = targetName;
+        Say($"Teleporting to {targetName}...");
         _netClient.UpdateManager.SetTeleportRequest(targetId);
     }
 
@@ -142,8 +252,10 @@ internal class TeleportManager {
     /// </summary>
     /// <param name="teleport">The packet data.</param>
     public void OnPlayerTeleport(PlayerTeleport teleport) {
+        _awaitingAnswer = false;
         if (_busy) {
             Logger.Info("Teleport ignored: a teleport is already in progress");
+            Say("Teleport ignored: a teleport is already in progress");
             return;
         }
 
@@ -151,12 +263,17 @@ internal class TeleportManager {
         var target = new Vector2(teleport.X, teleport.Y);
         Logger.Info($"Teleport #{number} to {teleport.SceneName} {target} ({DescribeState()})");
         _busy = true;
+        DevStartedCount++;
         _routine = null;
+        _arrivalScene = null;
+        _landingPending = false;
+        _landingMoved = false;
+        _enterSignalled = false;
         // The coroutine runs synchronously until its first yield and may already be done when StartCoroutine returns
         var routine = MonoBehaviourUtil.Instance.StartCoroutine(Teleport(number, teleport.SceneName, target));
         if (_busy && number == _teleportNumber) {
             _routine = routine;
-            MonoBehaviourUtil.Instance.StartCoroutine(Watchdog(number));
+            MonoBehaviourUtil.Instance.StartCoroutine(Watchdog(number, teleport.SceneName));
         }
     }
 
@@ -165,6 +282,21 @@ internal class TeleportManager {
     /// ends through <see cref="Recover"/>, so the player is never left without control.
     /// </summary>
     private IEnumerator Teleport(int number, string scene, Vector2 target) {
+        var currentScene = SceneUtil.GetCurrentSceneName();
+
+        // 0. Scenes that must not be entered or left this way (Godhome, dreams, Colosseum trials, menus): nothing
+        //    is touched, not even the pause menu
+        var sceneReason = TeleportRules.SceneBlockReason(currentScene) is { } own
+            ? $"you are {own}"
+            : TeleportRules.SceneBlockReason(scene) is { } other
+                ? $"the player is {other}"
+                : null;
+        if (sceneReason != null) {
+            Logger.Info($"Teleport cancelled: {sceneReason} ({currentScene} -> {scene})");
+            yield return End(number, $"Can't teleport: {sceneReason}", false);
+            yield break;
+        }
+
         // 1. A scene change (or moving) while paused leaves GameManager.isPaused set and the hero ignores all input
         //    afterwards (it can't move nor attack, even in later scenes), so leave the pause menu first.
         if (TeleportRules.NeedsUnpause(Snapshot())) {
@@ -178,7 +310,7 @@ internal class TeleportManager {
         }
 
         // 2. Wait (a little) for a state where it is safe to leave: not dead, not in a transition, cutscene,
-        //    bench, dive...
+        //    bench, dive, focus...
         string reason = null;
         var waited = 0f;
         while (waited < WaitForStateTimeout) {
@@ -195,27 +327,32 @@ internal class TeleportManager {
             Logger.Info($"Teleport cancelled: {reason} ({DescribeState()})");
             // Nothing was changed, so the hero keeps whatever control it has (e.g. a dialogue); only if unpausing
             // did not work, restore the playing state
-            yield return End(number, $"Can't teleport right now ({reason})", reason == "paused");
+            yield return End(number, $"Can't teleport right now: {reason}", reason == "paused");
             yield break;
         }
 
-        var currentScene = SceneUtil.GetCurrentSceneName();
+        currentScene = SceneUtil.GetCurrentSceneName();
         var kind = TeleportRules.Classify(currentScene, scene, Application.CanStreamedLevelBeLoaded(scene ?? ""));
         Logger.Info($"Teleport: {kind} from {currentScene} to {scene} {target}");
 
-        if (kind == TeleportKind.InvalidScene) {
-            yield return End(number, $"Can't teleport: unknown scene \"{scene}\"", false);
+        if (kind is TeleportKind.InvalidScene or TeleportKind.BlockedScene) {
+            yield return End(number, $"Can't teleport: the scene \"{scene}\" can't be entered", false);
             yield break;
         }
 
         if (kind == TeleportKind.SameScene) {
             var moved = Guard(() => MoveHeroInScene(target), "move hero");
-            yield return End(number, moved ? null : "Teleport failed", !moved);
+            yield return End(number, moved ? ArrivalMessage() : "Teleport failed", !moved);
             yield break;
         }
 
         // 3. Another scene: let the game load it and respawn the hero at the target position
+        _arrivalScene = scene;
+        _arrivalTarget = target;
+        _landingPending = true;
         if (!Guard(() => BeginHazardRespawnTransition(scene, target), "start scene change")) {
+            _arrivalScene = null;
+            _landingPending = false;
             yield return End(number, "Teleport failed", true);
             yield break;
         }
@@ -226,11 +363,15 @@ internal class TeleportManager {
         );
         if (SceneUtil.GetCurrentSceneName() != scene || global::GameManager.instance.IsInSceneTransition) {
             Logger.Warn($"Teleport: scene {scene} did not load ({DescribeState()})");
-            yield return End(number, "Teleport failed: the scene did not load", true);
+            // Recovery waits for a load that is still running (see Recover)
+            yield return End(number, "Teleport failed: the scene did not load in time", true);
             yield break;
         }
 
+        // Should have happened when the scene was set up; never leave it pending for a later scene
+        ResolveArrival("after load");
         Guard(AfterSceneLoaded, "after scene load");
+        _enterSignalled = true;
 
         // 4. Wait for the hazard respawn (animation + fade) to give control back
         yield return WaitRealtime(() => TeleportRules.IsControlRestored(Snapshot()), ControlTimeout);
@@ -239,18 +380,23 @@ internal class TeleportManager {
             Logger.Warn($"Teleport: no control after arriving ({DescribeState()})");
         }
 
-        yield return End(number, null, !restored);
+        yield return End(number, ArrivalMessage(), !restored);
 
-        // 5. Once landed, remember a safe hazard respawn point (the target may have been in the air)
+        // 5. Once landed, remember a safe hazard respawn point
         yield return new WaitForSecondsRealtime(0.75f);
         Guard(SetSafeHazardRespawn, "hazard respawn point");
+    }
+
+    private string ArrivalMessage() {
+        var name = _pendingTargetName != null ? $"Teleported to {_pendingTargetName}" : "Teleported";
+        return _landingMoved ? $"{name} (moved to the closest safe spot)" : name;
     }
 
     /// <summary>
     /// Hard limit for a teleport: if it is still running after <see cref="WatchdogTimeout"/> seconds, stop it and
     /// restore control.
     /// </summary>
-    private IEnumerator Watchdog(int number) {
+    private IEnumerator Watchdog(int number, string scene) {
         yield return new WaitForSecondsRealtime(WatchdogTimeout);
         if (!_busy || number != _teleportNumber) {
             yield break;
@@ -263,7 +409,8 @@ internal class TeleportManager {
 
         _routine = null;
         _busy = false;
-        Recover();
+        Say("Teleport took too long, control restored");
+        RecoverWhenLoaded(scene);
     }
 
     /// <summary>
@@ -271,11 +418,11 @@ internal class TeleportManager {
     /// </summary>
     private IEnumerator End(int number, string message, bool recover) {
         if (recover) {
-            Recover();
+            RecoverWhenLoaded(_arrivalScene);
         }
 
         if (message != null) {
-            UiManager.InternalChatBox.AddMessage(message);
+            Say(message);
         }
 
         Logger.Info($"Teleport #{number} done (recovered: {recover}, {DescribeState()})");
@@ -288,17 +435,150 @@ internal class TeleportManager {
     }
 
     /// <summary>
-    /// Move the hero within the current scene.
+    /// Restore control now or, if a scene is still loading, once it is loaded: clearing the hazard respawn flag or
+    /// touching the hero in the middle of a load makes the game enter the scene without an entry point (black
+    /// screen, hero stuck).
     /// </summary>
-    private static void MoveHeroInScene(Vector2 target) {
+    /// <param name="arrivalScene">The scene of the teleport, if it was a scene change.</param>
+    private void RecoverWhenLoaded(string arrivalScene) {
+        var gm = global::GameManager.instance;
+        if (gm != null && gm.IsInSceneTransition) {
+            Logger.Warn("Teleport: scene still loading, restoring control once it is loaded");
+            MonoBehaviourUtil.Instance.StartCoroutine(RecoverAfterTransition(arrivalScene));
+            return;
+        }
+
+        FinishArrival(arrivalScene);
+        Recover();
+    }
+
+    private IEnumerator RecoverAfterTransition(string arrivalScene) {
+        yield return WaitRealtime(() => !global::GameManager.instance.IsInSceneTransition, RecoverTransitionTimeout);
+        yield return new WaitForSecondsRealtime(0.5f);
+        FinishArrival(arrivalScene);
+        Recover();
+    }
+
+    /// <summary>
+    /// If the teleport loaded its scene but did not get to tell HKMP (aborted), do it now.
+    /// </summary>
+    private void FinishArrival(string arrivalScene) {
+        if (arrivalScene == null || _enterSignalled || SceneUtil.GetCurrentSceneName() != arrivalScene) {
+            return;
+        }
+
+        _enterSignalled = true;
+        ResolveArrival("recover");
+        Guard(AfterSceneLoaded, "after scene load (recover)");
+    }
+
+    /// <summary>
+    /// Move the hero within the current scene (to the closest safe spot if the target is above a hazard or a pit).
+    /// </summary>
+    private void MoveHeroInScene(Vector2 target) {
         var hero = HeroController.instance;
-        hero.transform.SetPosition2D(target.x, target.y);
+        var landing = FindLanding(target, out _landingMoved);
+        if (_landingMoved) {
+            // A safe spot of the scene: stand on its ground, as a hazard respawn does
+            landing = hero.FindGroundPoint(landing, true);
+        }
+
+        hero.transform.SetPosition2D(landing.x, landing.y);
         var body = hero.GetComponent<Rigidbody2D>();
         if (body) {
             body.linearVelocity = Vector2.zero;
         }
 
         global::GameManager.instance.cameraCtrl.PositionToHero(false);
+    }
+
+    /// <summary>
+    /// Called when the target scene is set up (GameManager.BeginScene, before the hero is placed at the hazard
+    /// respawn location) and as a fallback from HeroController.HazardRespawn: if the target is above a hazard or a
+    /// pit, use the closest safe spot of the scene as the hazard respawn location.
+    /// </summary>
+    private void ResolveArrival(string when) {
+        if (!_landingPending) {
+            return;
+        }
+
+        _landingPending = false;
+        var scene = _arrivalScene;
+        var current = SceneUtil.GetCurrentSceneName();
+        if (current != scene) {
+            Logger.Warn($"Teleport: landing check ({when}) in {current}, expected {scene}");
+        }
+
+        Guard(() => {
+            var landing = FindLanding(_arrivalTarget, out _landingMoved);
+            Logger.Info($"Teleport: landing ({when}) target={_arrivalTarget} landing={landing} moved={_landingMoved}");
+            if (_landingMoved) {
+                PlayerData.instance.SetVector3(nameof(PlayerData.hazardRespawnLocation),
+                    new Vector3(landing.x, landing.y, 0f));
+            }
+        }, "landing check");
+    }
+
+    /// <summary>
+    /// Where to land for the given target in the current scene: the target if there is safe ground below it,
+    /// otherwise the closest safe hazard respawn marker.
+    /// </summary>
+    private static Vector2 FindLanding(Vector2 target, out bool moved) {
+        var hasAcidArmour = PlayerData.instance != null && PlayerData.instance.GetBool(nameof(PlayerData.hasAcidArmour));
+        var targetSpot = CheckSpot(target, hasAcidArmour);
+        moved = false;
+        if (targetSpot.Safe) {
+            return target;
+        }
+
+        var markers = UnityEngine.Object.FindObjectsOfType<HazardRespawnMarker>()
+            .Where(m => m != null && m.isActiveAndEnabled)
+            .Select(m => (Vector2) m.transform.position)
+            .ToList();
+        var chosen = TeleportRules.ChooseLanding(
+            targetSpot,
+            markers.Select(m => CheckSpot(m, hasAcidArmour)),
+            out moved
+        );
+        Logger.Info($"Teleport: target {target} unsafe (ground={targetSpot.HasGround}, hazard={targetSpot.Hazard}, " +
+                    $"gate={targetSpot.InTransition}), " +
+                    $"{markers.Count} markers, moved={moved}");
+        return new Vector2(chosen.X, chosen.Y);
+    }
+
+    /// <summary>
+    /// Ground and hazard check of a spot: the ground the hazard respawn would put the knight on, and whether a
+    /// hazard collider touches the knight standing there.
+    /// </summary>
+    private static LandingSpot CheckSpot(Vector2 point, bool hasAcidArmour) {
+        var hit = Physics2D.Raycast(point, Vector2.down, GroundSearchDistance, TerrainMask);
+        if (hit.collider == null) {
+            return new LandingSpot(point.x, point.y, false, false);
+        }
+
+        var hazard = false;
+        var inTransition = false;
+        foreach (var collider in Physics2D.OverlapBoxAll(hit.point + new Vector2(0f, 0.65f), new Vector2(0.9f, 1.3f), 0f)) {
+            if (collider == null || !collider.enabled) {
+                continue;
+            }
+
+            if (collider.isTrigger && collider.GetComponent<TransitionPoint>() is { } gate && gate.isActiveAndEnabled &&
+                !gate.isADoor) {
+                // The target just entered through this gate: landing here walks back into the previous scene
+                inTransition = true;
+                continue;
+            }
+
+            var damage = collider.GetComponent<DamageHero>() ?? collider.GetComponentInParent<DamageHero>();
+            if (damage != null && damage.isActiveAndEnabled &&
+                TeleportRules.IsHazard(damage.hazardType, hasAcidArmour)) {
+                hazard = true;
+                break;
+            }
+        }
+
+        return new LandingSpot(point.x, point.y, true, hazard, inTransition);
     }
 
     /// <summary>
@@ -352,16 +632,17 @@ internal class TeleportManager {
     /// </summary>
     private static void SetSafeHazardRespawn() {
         var hero = HeroController.instance;
-        if (!hero || hero.cState.dead || hero.cState.hazardDeath) {
-            return;
-        }
-
-        if (hero.cState.onGround) {
-            PlayerData.instance.SetHazardRespawn(hero.transform.position, hero.cState.facingRight);
+        if (!hero || hero.cState.dead || hero.cState.hazardDeath || hero.cState.hazardRespawning) {
             return;
         }
 
         var position = (Vector2) hero.transform.position;
+        var hasAcidArmour = PlayerData.instance.GetBool(nameof(PlayerData.hasAcidArmour));
+        if (hero.cState.onGround && CheckSpot(position + new Vector2(0f, 0.5f), hasAcidArmour).Safe) {
+            PlayerData.instance.SetHazardRespawn(hero.transform.position, hero.cState.facingRight);
+            return;
+        }
+
         var marker = TransitionPoint.TransitionPoints
             .Where(t => t != null && t.respawnMarker != null)
             .OrderBy(t => Vector2.Distance(t.transform.position, position))
@@ -409,12 +690,14 @@ internal class TeleportManager {
 
     /// <summary>
     /// Restore full control of the hero after a failed or stuck teleport: pause, game state, time scale, input,
-    /// hero transition/respawn state, gravity, renderer, camera and fade.
+    /// hero transition/respawn state, gravity, renderer, camera and fade. Only called when no scene is loading
+    /// (see <see cref="RecoverWhenLoaded"/>).
     /// </summary>
     private static void Recover() {
         Logger.Warn($"Teleport: restoring control ({DescribeState()})");
         var gm = global::GameManager.instance;
-        if (gm == null) {
+        if (gm == null || !gm.IsGameplayScene()) {
+            // Menu or cutscene (e.g. quit to the menu during the teleport): nothing to give back
             return;
         }
 
@@ -429,11 +712,14 @@ internal class TeleportManager {
         var hero = HeroController.instance;
         if (hero != null && !hero.cState.dead && !gm.IsInSceneTransition) {
             Guard(() => {
+                // Keep the damage mode of the player (SetDamageMode also clears PlayerData.isInvincible)
+                var invincible = PlayerData.instance.GetBool(nameof(PlayerData.isInvincible));
                 hero.cState.transitioning = false;
                 hero.cState.hazardRespawning = false;
                 hero.transitionState = HeroTransitionState.WAITING_TO_TRANSITION;
                 hero.AffectedByGravity(true);
                 hero.SetDamageMode(DamageMode.FULL_DAMAGE);
+                PlayerData.instance.SetBool(nameof(PlayerData.isInvincible), invincible);
                 var body = hero.GetComponent<Rigidbody2D>();
                 if (body) {
                     body.isKinematic = false;
@@ -513,6 +799,7 @@ internal class TeleportManager {
             state.Transitioning = hero.cState.transitioning;
             state.HazardRespawning = hero.cState.hazardRespawning || hero.cState.hazardDeath;
             state.UsingMovementAbility = hero.cState.superDashing || hero.cState.spellQuake;
+            state.Focusing = hero.cState.focusing;
             state.ControlRelinquished = hero.controlReqlinquished;
             state.HeroAcceptingInput = hero.acceptingInput;
         }
@@ -538,10 +825,11 @@ internal class TeleportManager {
     }
 
     /// <summary>
-    /// Stop a running teleport on disconnect (the game keeps loading a scene it already started) and forget the
-    /// cycling state.
+    /// Stop a running teleport on disconnect and forget the cycling state. A scene change that was already started
+    /// keeps loading; control is restored once it is loaded.
     /// </summary>
     public void OnDisconnect() {
+        var wasBusy = _busy;
         if (_routine != null) {
             MonoBehaviourUtil.Instance.StopCoroutine(_routine);
         }
@@ -550,5 +838,12 @@ internal class TeleportManager {
         _busy = false;
         _teleportNumber++;
         _lastPickedId = null;
+        _awaitingAnswer = false;
+        _arrivalScene = null;
+        _landingPending = false;
+        if (wasBusy) {
+            // Without telling HKMP about the scene (we are not connected anymore)
+            Guard(() => RecoverWhenLoaded(null), "recover on disconnect");
+        }
     }
 }

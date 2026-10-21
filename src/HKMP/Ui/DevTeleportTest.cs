@@ -47,9 +47,20 @@ internal static class DevTeleportTest {
 
     public static void TryStart(UiManager uiManager, NetClient netClient) {
         _role = GetOption("-hkmp-test-tp")?.ToLowerInvariant();
-        if (_role != "p1" && _role != "p2") {
+        if (_role != "p1" && _role != "p2" && _role != "p3") {
             return;
         }
+
+        // Edge-case suite (DevTeleportEdgeTest): -hkmp-test-tp-suite edge
+        var edgeSuite = string.Equals(GetOption("-hkmp-test-tp-suite"), "edge", StringComparison.OrdinalIgnoreCase);
+
+        // Tests run silent (the game's own volume settings are encrypted prefs; this mutes all audio of the process)
+        AudioListener.volume = 0f;
+        MonoBehaviourUtil.Instance.OnUpdateEvent += () => {
+            if (AudioListener.volume > 0f) {
+                AudioListener.volume = 0f;
+            }
+        };
 
         _uiManager = uiManager;
         _netClient = netClient;
@@ -85,12 +96,17 @@ internal static class DevTeleportTest {
         };
 
         Log($"start role={_role} dir={_dir}");
+        if (edgeSuite) {
+            MonoBehaviourUtil.Instance.StartCoroutine(DevTeleportEdgeTest.Run(_role, _uiManager, _netClient, _dir));
+            return;
+        }
+
         MonoBehaviourUtil.Instance.StartCoroutine(_role == "p1" ? Target() : Teleporter());
     }
 
-    private static void Log(string message) => Logger.Info($"HKMP_TP [{_role}] {message}");
+    internal static void Log(string message) => Logger.Info($"HKMP_TP [{_role}] {message}");
 
-    private static void Check(string name, bool ok, string detail) {
+    internal static void Check(string name, bool ok, string detail) {
         if (ok) {
             _pass++;
         } else {
@@ -100,16 +116,16 @@ internal static class DevTeleportTest {
         Logger.Info($"HKMP_TP {(ok ? "PASS" : "FAIL")} [{_role}] {name}: {detail}");
     }
 
-    private static string CurrentScene => UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+    internal static string CurrentScene => UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
 
-    private static void Signal(string key, string value = "1") {
+    internal static void Signal(string key, string value = "1") {
         File.WriteAllText(Path.Combine(_dir, key), value);
         Log($"signal {key}={value}");
     }
 
-    private static string _signalValue;
+    internal static string _signalValue;
 
-    private static IEnumerator WaitSignal(string key, float timeout = 300f) {
+    internal static IEnumerator WaitSignal(string key, float timeout = 300f) {
         _signalValue = null;
         var path = Path.Combine(_dir, key);
         var waited = 0f;
@@ -127,7 +143,7 @@ internal static class DevTeleportTest {
         _signalValue = File.ReadAllText(path);
     }
 
-    private static IEnumerator WaitUntil(Func<bool> condition, float timeout) {
+    internal static IEnumerator WaitUntil(Func<bool> condition, float timeout) {
         var waited = 0f;
         while (waited < timeout) {
             bool done;
@@ -146,7 +162,7 @@ internal static class DevTeleportTest {
         }
     }
 
-    private static string State() {
+    internal static string State() {
         try {
             var gm = global::GameManager.instance;
             var hc = HeroController.instance;
@@ -167,12 +183,12 @@ internal static class DevTeleportTest {
         }
     }
 
-    private static float _brightness;
+    internal static float _brightness;
 
     /// <summary>
     /// Measure the average brightness of the screen (0 black, 1 white) and save a screenshot.
     /// </summary>
-    private static IEnumerator Measure(string step) {
+    internal static IEnumerator Measure(string step) {
         yield return new WaitForEndOfFrame();
         _brightness = -1f;
         try {
@@ -194,19 +210,32 @@ internal static class DevTeleportTest {
         }
     }
 
-    private static float _moved;
+    internal static float _moved;
 
     /// <summary>
     /// Hold right (then left if blocked) and measure how far the hero moved.
     /// </summary>
-    private static IEnumerator TryMove(float seconds = 0.8f) {
+    internal static IEnumerator TryMove(float seconds = 0.8f) {
         _moved = 0f;
         var hc = HeroController.instance;
         if (hc == null) {
             yield break;
         }
 
-        foreach (var dir in new[] { 1f, -1f }) {
+        // Walk first towards the side whose closest transition gate (at about the same height) is farther away:
+        // walking into a gate changes scene
+        var heroPos = (Vector2) hc.transform.position;
+        float GateDistance(float dir) {
+            var distances = TransitionPoint.TransitionPoints
+                .Where(t => t != null && !t.isADoor && Mathf.Abs(t.transform.position.y - heroPos.y) < 8f)
+                .Select(t => (t.transform.position.x - heroPos.x) * dir)
+                .Where(d => d > 0f)
+                .ToList();
+            return distances.Count > 0 ? distances.Min() : float.MaxValue;
+        }
+
+        var first = GateDistance(1f) >= GateDistance(-1f) ? 1f : -1f;
+        foreach (var dir in new[] { first, -first }) {
             var start = hc.transform.position;
             _injectMove = dir;
             yield return new WaitForSecondsRealtime(seconds);
@@ -219,12 +248,12 @@ internal static class DevTeleportTest {
         }
     }
 
-    private static bool _attacked;
+    internal static bool _attacked;
 
     /// <summary>
     /// Press attack and check that the hero swings the nail.
     /// </summary>
-    private static IEnumerator TryAttack() {
+    internal static IEnumerator TryAttack() {
         _attacked = false;
         var hc = HeroController.instance;
         if (hc == null) {
@@ -242,7 +271,7 @@ internal static class DevTeleportTest {
         _injectAttack = false;
     }
 
-    private static IEnumerator GoTo(string scene, string gate) {
+    internal static IEnumerator GoTo(string scene, string gate) {
         Log($"transition {CurrentScene} -> {scene}:{gate}");
         yield return WaitUntil(() => !global::GameManager.instance.IsInSceneTransition, 30f);
         global::GameManager.instance.BeginSceneTransition(new global::GameManager.SceneLoadInfo {
@@ -261,7 +290,7 @@ internal static class DevTeleportTest {
         Log($"entered {CurrentScene}; gates: {string.Join(" ", gates)}; {State()}");
     }
 
-    private static IEnumerator WaitInGame() {
+    internal static IEnumerator WaitInGame() {
         yield return WaitUntil(
             () => HeroController.instance != null && _netClient.IsConnected &&
                   global::GameManager.instance.gameState == GameState.PLAYING &&
@@ -465,7 +494,7 @@ internal static class DevTeleportTest {
         yield return WaitSignal($"{step}-p1-checked");
     }
 
-    private static IEnumerator CheckControl(string step, string label, string expectedScene) {
+    internal static IEnumerator CheckControl(string step, string label, string expectedScene) {
         yield return Measure(step);
         var stateBefore = State();
         yield return TryMove();
@@ -493,7 +522,7 @@ internal static class DevTeleportTest {
         Check($"{step} {label}: hero attacks", _attacked, $"attacked={_attacked}");
     }
 
-    private static string GetOption(string option) {
+    internal static string GetOption(string option) {
         var args = Environment.GetCommandLineArgs();
         for (var i = 0; i < args.Length - 1; i++) {
             if (string.Equals(args[i], option, StringComparison.OrdinalIgnoreCase)) {

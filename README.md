@@ -12,7 +12,7 @@ Built on [HKMP](https://github.com/Extremelyd1/HKMP) · Hollow Knight 1.5.12459 
 ![Unity](https://img.shields.io/badge/Unity-6000.0.61-222C37?style=flat&logo=unity&logoColor=white)
 ![.NET](https://img.shields.io/badge/.NET-8-512BD4?style=flat&logo=dotnet&logoColor=white)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-0078D4?style=flat&logo=windows&logoColor=white)
-![Version](https://img.shields.io/badge/version-1.2.1-C6613F?style=flat)
+![Version](https://img.shields.io/badge/version-1.2.2-C6613F?style=flat)
 ![License](https://img.shields.io/badge/license-LGPL--2.1-blue?style=flat)
 
 ![Installer](docs/screenshots/installer-welcome.png)
@@ -39,7 +39,8 @@ Built on [HKMP](https://github.com/Extremelyd1/HKMP) · Hollow Knight 1.5.12459 
 
 ## Features
 
-- **Synced enemies.** If one player hits or kills an enemy, the other sees it. Grubs are shared between players. Health, soul, equipped charms and tarros are per player; world progress (doors, dead enemies, defeated bosses) is shared.
+- **Synced enemies.** If one player hits or kills an enemy, the other sees it. Grubs are shared live: a jar broken by one player breaks in the other's game, and the counters are shared too. Health, soul, geo, position, equipped charms and the items you already had stay individual; world state (doors, dead enemies, defeated bosses) is shared.
+- **Shared progress.** What one player obtains, everyone gets: masks and soul vessels, spells and their levels, movement abilities, Dream Nail, nail arts, King's Brand and key items, and story progress (NPC dialogue, maps, visited zones, Godhome). Receiving a mask does not heal you. When you join, your earlier progress is merged in and the higher value wins.
 - **Enemies chase the nearest player.** Enemies target and attack the closest player, host or not, and only switch targets when another player is clearly closer (hysteresis). Controlled by `EnemiesTargetNearestPlayer` (on by default).
 - **Steam names above characters.** Your Steam name is shown over your character (option *Steam Name* in the mod menu, on by default). Spaces become `_` and names are capped at 20 characters.
 - **Skin kept between sessions.** Your chosen skin is saved and applied automatically when you connect.
@@ -49,11 +50,11 @@ Built on [HKMP](https://github.com/Extremelyd1/HKMP) · Hollow Knight 1.5.12459 
 - **Coexists with other mods.** It only adds `Managed\Mods\Asyncronus`; other mods and your saves are never touched.
 - **No game files in this repository.** The installer applies a binary patch to *your* `Assembly-CSharp.dll` after verifying its hash.
 - **Classic IP + port** (UDP 26950) is still available as a fallback.
-- **Teleport.** A TP button in the pause menu and the `/tp [name]` command. Controlled by the server setting `AllowTeleport` (on by default). It uses the game's own respawn, so the screen and controls are always restored.
+- **Teleport.** A TP button in the pause menu and the `/tp [name]` command. Controlled by the server setting `AllowTeleport` (on by default). You land on a safe spot (never on spikes, acid or over a pit). The server refuses teleports into or out of Godhome, dreams, the White Palace, Colosseum trials, menus and cutscenes. Double clicks and repeated requests are ignored, two players cannot teleport to each other at the same time, and refusals show a clear message. The screen and controls are always restored.
 - **Arena and wave doors wait for everyone.** They only close once *all* players in the scene have entered (`ArenaWaitForAllPlayers`, on by default).
 - **Rotating save backups.** Before applying the host's state, the mod keeps three rotating backups of each `user*.dat` (`user1.dat.hkmp-backup-*`), and all save writes are atomic.
 - **Copy code button** for the join code.
-- **Linux support.** Runs through Steam with Proton (recommended) or the native build. Not tested on real Linux yet; see [Linux](#linux).
+- **Linux support.** Runs through Steam with Proton (recommended) or the native build. Installer tested on Debian 12 only; the game itself has not been run on Linux yet; see [Linux](#linux).
 
 ## Preview
 
@@ -71,7 +72,7 @@ The installer UI is currently in Spanish.
 
 Everyone who plays together must use the **same version**.
 
-> **1.2.1 changes the network protocol compared with 1.1.x and 1.2.0.** Players on other versions cannot join each other. Update everyone to 1.2.1 together.
+> **1.2.2 changes the network protocol and the save data compared with 1.2.1 and earlier.** Players on other versions cannot join each other. All players and the server must use 1.2.2. If you use the standalone HKMPServer, update it too: it embeds the save data.
 
 ### Requirements
 
@@ -99,7 +100,7 @@ Use **Uninstall Asyncronus** in the Start menu, or Settings → Apps. The origin
 
 Asyncronus works on Linux through Steam with **Proton** (recommended: Proton 9+ or Experimental; Steam Deck included) or the native Linux build.
 
-> **Status: not tested on a real Linux machine yet.** The installer was verified end to end on Windows (patch, hook generation, install, uninstall, byte-identical restore). Nothing has been run inside Hollow Knight on Linux. Version 1.2.1 fixes the Linux package: its scripts had Windows (CRLF) line endings and would not start, so run them with `bash`.
+> **Status: the installer has only been tested on Debian 12.** The installer was verified end to end on Windows (patch, hook generation, install, uninstall, byte-identical restore). Nothing has been run inside Hollow Knight on Linux. Version 1.2.1 fixes the Linux package: its scripts had Windows (CRLF) line endings and would not start, so run them with `bash`.
 
 **Requirements:** Hollow Knight 1.5.12459 on Steam (*Betas: None*), Steam installed and logged in, a .NET 8+ runtime or SDK (only needed while installing), `bash`, `sha256sum` and `tar`.
 
@@ -203,14 +204,14 @@ dotnet test tests/HKMP.SteamBridge.Tests
 ## Known limitations
 
 - **Join by code between two different Steam accounts has not yet been verified in the real relay network.** The bridge is covered by unit tests and by Steam sockets locally and inside the game, but a real two-account test is still pending. Please open an issue with your `ModLog.txt` if it fails.
-- Whole-game coverage is incomplete. Not verified: Godhome, Colosseum, PvP, level 2 spells, Sharp Shadow, Dung/Spore/Womb/Weaversong/Grimmchild/Dreamshield charms.
+- Whole-game coverage is incomplete. Not verified: Godhome progress, Colosseum, PvP, level 2 spells, Sharp Shadow, Dung/Spore/Womb/Weaversong/Grimmchild/Dreamshield charms, mimic grub jars, picking up real items, spell shrines, and more than 2 players (barely tested).
 - Enemies with no saved state respawn when re-entering an empty room, as in the base game.
-- Abilities and maps are per player (HKMP design).
+- Two players getting the same fragment at the same moment do not add up: the last value wins.
 - Banning by IP is not useful for bridged players: they all arrive from `127.0.0.1`. Ban by key instead.
-- Teleport to bosses, arenas and Godhome has not been verified.
+- Teleport is refused in Godhome (except its entrance rooms), dreams, the White Palace, Colosseum trials, menus and cutscenes. If the target is in the air above spikes, acid or a pit, you land on the closest safe spot of the room instead.
 - Enemy targeting (`EnemiesTargetNearestPlayer`) does not cover bosses, arenas or homing projectiles, which can still go to the host.
 - Waiting for all players before closing doors (`ArenaWaitForAllPlayers`) does not cover the Colosseum or bosses that start when hit.
-- Linux support has not been tested on a real Linux machine. See [docs/LINUX.md](docs/LINUX.md#not-verified).
+- Linux: the installer has only been tested on Debian 12, and the game has not been run on Linux yet. See [docs/LINUX.md](docs/LINUX.md#not-verified).
 
 ## Credits & license
 

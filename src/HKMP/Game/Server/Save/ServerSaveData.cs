@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Hkmp.Game.Client.Save;
 using Hkmp.Logging;
 using Hkmp.Networking.Packet.Data;
@@ -108,6 +110,133 @@ internal class ServerSaveData {
         currentSave.SaveData = saveData;
 
         return currentSave;
+    }
+
+    /// <summary>
+    /// Move the progress stored for the player with the given auth key under fields that are now shared
+    /// (<see cref="SaveDataMapping.SyncType.Server"/>, e.g. masks, vessels, spells and story flags that older
+    /// versions stored per player) into the global save data, merging it with the progress already there
+    /// (<see cref="SharedProgressRules"/>: OR for flags, max for levels, union for lists, masks/shards and
+    /// vessels/fragments as pairs). Without this, the stale per-player value would override the shared value for
+    /// that player on join, and the player's own progress would be lost for the others.
+    /// </summary>
+    /// <param name="authKey">The auth key of the player.</param>
+    /// <returns>The global entries that changed (index to encoded value), to broadcast to connected players.
+    /// </returns>
+    public Dictionary<ushort, byte[]> MergePlayerProgressIntoGlobal(string authKey) {
+        var changed = new Dictionary<ushort, byte[]>();
+        if (!PlayerSaveData.TryGetValue(authKey, out var playerSaveData) || playerSaveData.Count == 0) {
+            return changed;
+        }
+
+        var mapping = SaveDataMapping.Instance;
+        var sharedPlayerData = new Dictionary<string, ushort>();
+        var sharedBools = new List<ushort>();
+        foreach (var index in playerSaveData.Keys) {
+            if (mapping.PlayerDataIndices.TryGetValue(index, out var name)) {
+                if (mapping.PlayerDataVarProperties.TryGetValue(name, out var props) && props.Sync &&
+                    props.SyncType == SaveDataMapping.SyncType.Server) {
+                    sharedPlayerData[name] = index;
+                }
+            } else if (mapping.PersistentBoolIndices.TryGetValue(index, out var item)) {
+                if (mapping.PersistentBoolVarProperties.TryGetValue(item, out var props) && props.Sync &&
+                    props.SyncType == SaveDataMapping.SyncType.Server) {
+                    sharedBools.Add(index);
+                }
+            }
+        }
+
+        if (sharedPlayerData.Count == 0 && sharedBools.Count == 0) {
+            return changed;
+        }
+
+        void SetGlobal(ushort index, byte[] value) {
+            if (GlobalSaveData.TryGetValue(index, out var current) && current.SequenceEqual(value)) {
+                return;
+            }
+
+            GlobalSaveData[index] = value;
+            changed[index] = value;
+        }
+
+        int? GetInt(Dictionary<ushort, byte[]> data, string name) {
+            if (!mapping.PlayerDataIndices.TryGetValue(name, out var index) ||
+                !data.TryGetValue(index, out var value)) {
+                return null;
+            }
+
+            return EncodeUtil.DecodeSaveDataValue(name, value) as int?;
+        }
+
+        // Masks/shards and vessels/fragments are merged as pairs, so the result is a state one player really had
+        void MergePair(string maxName, string piecesName, int defaultMax, Func<int, int, int> total) {
+            if (!sharedPlayerData.ContainsKey(maxName) && !sharedPlayerData.ContainsKey(piecesName)) {
+                return;
+            }
+
+            var playerMax = GetInt(playerSaveData, maxName);
+            var playerPieces = GetInt(playerSaveData, piecesName);
+            var serverMax = GetInt(GlobalSaveData, maxName);
+            var serverPieces = GetInt(GlobalSaveData, piecesName);
+            (int Max, int Pieces) merged;
+            if (serverMax == null && serverPieces == null) {
+                merged = (playerMax ?? defaultMax, playerPieces ?? 0);
+            } else {
+                merged = SharedProgressRules.MergePair(
+                    (serverMax ?? defaultMax, serverPieces ?? 0),
+                    (playerMax ?? serverMax ?? defaultMax, playerPieces ?? serverPieces ?? 0),
+                    total
+                );
+            }
+
+            SetGlobal(mapping.PlayerDataIndices[maxName], EncodeUtil.EncodeSaveDataValue(merged.Max));
+            SetGlobal(mapping.PlayerDataIndices[piecesName], EncodeUtil.EncodeSaveDataValue(merged.Pieces));
+            sharedPlayerData.Remove(maxName);
+            sharedPlayerData.Remove(piecesName);
+        }
+
+        var moved = sharedPlayerData.Values.Concat(sharedBools).ToList();
+
+        MergePair("maxHealthBase", "heartPieces", 5, SharedProgressRules.MaskShardTotal);
+        MergePair("MPReserveMax", "vesselFragments", 0, SharedProgressRules.VesselFragmentTotal);
+
+        foreach (var pair in sharedPlayerData) {
+            var name = pair.Key;
+            var index = pair.Value;
+            try {
+                var playerValue = EncodeUtil.DecodeSaveDataValue(name, playerSaveData[index]);
+                var serverValue = GlobalSaveData.TryGetValue(index, out var serverEncoded)
+                    ? EncodeUtil.DecodeSaveDataValue(name, serverEncoded)
+                    : null;
+                var merged = SharedProgressRules.MergeValue(name, serverValue, playerValue);
+                SetGlobal(index, EncodeUtil.EncodeSaveDataValue(merged));
+            } catch (Exception e) {
+                Logger.Warn($"Could not merge stored player progress for '{name}': {e.Message}");
+            }
+        }
+
+        foreach (var index in sharedBools) {
+            var playerValue = playerSaveData[index];
+            var activated = playerValue.Length > 0 && playerValue[0] != 0;
+            if (GlobalSaveData.TryGetValue(index, out var serverValue) && serverValue.Length > 0 && serverValue[0] != 0) {
+                continue;
+            }
+
+            if (activated || !GlobalSaveData.ContainsKey(index)) {
+                SetGlobal(index, playerValue);
+            }
+        }
+
+        foreach (var index in moved) {
+            playerSaveData.Remove(index);
+        }
+
+        Logger.Info(
+            $"Merged {moved.Count} stored per-player entries of shared progress into the global save " +
+            $"({changed.Count} global values changed)"
+        );
+
+        return changed;
     }
 
     /// <summary>

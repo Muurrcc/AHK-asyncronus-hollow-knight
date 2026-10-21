@@ -8,25 +8,25 @@
         },
         "maxHealthBase": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "heartPieces": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "heartPieceCollected": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "heartPieceMax": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -44,25 +44,25 @@
         },
         "vesselFragments": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "vesselFragmentCollected": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "MPReserveMax": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "vesselFragmentMax": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -170,73 +170,73 @@
         },
         "hasSpell": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "fireballLevel": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "quakeLevel": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "screamLevel": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "hasNailArt": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasCyclone": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasDashSlash": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasUpwardSlash": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasAllNailArts": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasDreamNail": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasDreamGate": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dreamNailUpgraded": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -272,85 +272,85 @@
         },
         "hasDash": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasWalljump": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasSuperDash": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasShadowDash": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasAcidArmour": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasDoubleJump": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasLantern": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasTramPass": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasQuill": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasCityKey": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasSlykey": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "gaveSlykey": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasWhiteKey": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "usedWhiteKey": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -362,25 +362,25 @@
         },
         "hasWaterwaysKey": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasSpaKey": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasLoveKey": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasKingsBrand": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -579,121 +579,121 @@
         },
         "elderbug": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "metElderbug": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugReintro": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugHistory": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "elderbugHistory1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugHistory2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugHistory3": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugSpeechSly": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugSpeechStation": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugSpeechEggTemple": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugSpeechMapShop": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugSpeechBretta": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugSpeechJiji": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugSpeechMinesLift": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugSpeechKingsPass": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugSpeechInfectedCrossroads": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugSpeechFinalBossDoor": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugRequestedFlower": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugGaveFlower": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugFirstCall": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -807,13 +807,13 @@
         },
         "metRelicDealer": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "metRelicDealerShop": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -825,31 +825,31 @@
         },
         "marmOutsideConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "marmConvo1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "marmConvo2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "marmConvo3": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "marmConvoNailsmith": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -861,13 +861,13 @@
         },
         "metCornifer": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "corniferIntroduced": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1035,19 +1035,19 @@
         },
         "metIselda": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "iseldaCorniferHomeConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "iseldaConvo1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1107,7 +1107,7 @@
         },
         "metSlyShop": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1119,37 +1119,37 @@
         },
         "slyShellFrag1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "slyShellFrag2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "slyShellFrag3": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "slyShellFrag4": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "slyVesselFrag1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "slyVesselFrag2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1167,19 +1167,19 @@
         },
         "slyConvoNailArt": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "slyConvoMapper": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "slyConvoNailHoned": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1191,55 +1191,55 @@
         },
         "jijiMet": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "jijiShadeOffered": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "jijiShadeCharmConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "metJinn": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "jinnConvo1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "jinnConvo2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "jinnConvo3": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "jinnConvoKingBrand": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "jinnConvoShadeCharm": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1311,55 +1311,55 @@
         },
         "zotePrecept": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "zoteTownConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "shaman": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "shamanScreamConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "shamanQuakeConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "shamanFireball2Convo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "shamanScream2Convo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "shamanQuake2Convo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "metMiner": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1371,7 +1371,7 @@
         },
         "minerEarly": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
@@ -1395,7 +1395,7 @@
         },
         "hornetFountainEncounter": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1425,13 +1425,13 @@
         },
         "metMoth": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "ignoredMoth": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1443,79 +1443,79 @@
         },
         "mothDeparted": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "completedRGDreamPlant": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dreamReward1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dreamReward2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dreamReward3": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dreamReward4": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dreamReward5": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dreamReward5b": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dreamReward6": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dreamReward7": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dreamReward8": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dreamReward9": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dreamMothConvo1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1563,13 +1563,13 @@
         },
         "metGiraffe": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "metCharmSlug": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1605,19 +1605,19 @@
         },
         "salubraConvoCombo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "salubraConvoOvercharm": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "salubraConvoTruth": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1683,79 +1683,79 @@
         },
         "metNailmasterMato": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "metNailmasterSheo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "metNailmasterOro": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "matoConvoSheo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "matoConvoOro": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "matoConvoSly": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "sheoConvoMato": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "sheoConvoOro": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "sheoConvoSly": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "sheoConvoNailsmith": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "oroConvoSheo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "oroConvoMato": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "oroConvoSly": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1767,25 +1767,25 @@
         },
         "metHunter": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hunterRewardOffered": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "huntersMarkOffered": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasHuntersMark": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1863,7 +1863,7 @@
         },
         "tukMet": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1881,19 +1881,19 @@
         },
         "metEmilitia": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "emilitiaKingsBrandConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "metCloth": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -1941,49 +1941,49 @@
         },
         "bigCatHitTail": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "bigCatHitTailConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "bigCatMeet": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "bigCatTalk1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "bigCatTalk2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "bigCatTalk3": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "bigCatKingsBrandConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "bigCatShadeConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -2031,73 +2031,73 @@
         },
         "maskmakerMet": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "maskmakerConvo1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "maskmakerConvo2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "maskmakerUnmasked1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "maskmakerUnmasked2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "maskmakerShadowDash": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "maskmakerKingsBrand": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dungDefenderConvo1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dungDefenderConvo2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dungDefenderConvo3": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dungDefenderCharmConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "dungDefenderIsmaConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -2115,67 +2115,67 @@
         },
         "dungDefenderAwakeConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "midwifeMet": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "midwifeConvo1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "midwifeConvo2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "metQueen": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "queenTalk1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "queenTalk2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "queenDung1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "queenDung2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "queenHornet": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "queenTalkExtra": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -2187,13 +2187,13 @@
         },
         "queenConvo_grimm1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "queenConvo_grimm2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -2205,19 +2205,19 @@
         },
         "metXun": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "xunFailedConvo1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "xunFailedConvo2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -2241,7 +2241,7 @@
         },
         "xunRewardGiven": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -2284,7 +2284,7 @@
         },
         "metStag": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -2303,97 +2303,97 @@
         },
         "stagConvoTram": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "stagConvoTiso": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "stagRemember1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "stagRemember2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "stagRemember3": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "stagEggInspected": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "stagHopeConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "littleFoolMet": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "ranAway": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "seenColosseumTitle": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "colosseumBronzeOpened": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "colosseumBronzeCompleted": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "colosseumSilverOpened": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "colosseumSilverCompleted": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "colosseumGoldOpened": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "colosseumGoldCompleted": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -3263,25 +3263,25 @@
         },
         "hasJournal": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "seenJournalMsg": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "seenHunterMsg": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "fillJournal": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -6544,7 +6544,7 @@
         "grubsCollected": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Int32",
             "Additive": true
         },
@@ -6738,43 +6738,43 @@
         },
         "XERO_encountered": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "ALADAR_encountered": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "HU_encountered": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "MUMCAT_encountered": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "NOEYES_encountered": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "MARKOTH_encountered": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "GALIEN_encountered": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -6822,115 +6822,115 @@
         },
         "visitedCrossroads": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedGreenpath": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedFungus": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedHive": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedCrossroadsInfected": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedRuins": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedMines": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedRoyalGardens": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedFogCanyon": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedDeepnest": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedRestingGrounds": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedWaterways": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedAbyss": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedOutskirts": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedWhitePalace": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedCliffs": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedAbyssLower": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedGodhome": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedMines10": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -7043,7 +7043,7 @@
         "scenesGrubRescued": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Collections.Generic.List`1[System.String]",
             "Additive": true
         },
@@ -7070,163 +7070,163 @@
         },
         "scenesEncounteredDreamPlantC": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Collections.Generic.List`1[System.String]"
         },
         "hasMap": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapDirtmouth": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapCrossroads": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapGreenpath": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapFogCanyon": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapRoyalGardens": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapFungalWastes": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapCity": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapWaterways": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapMines": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapDeepnest": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapCliffs": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapOutskirts": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapRestingGrounds": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mapAbyss": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasPin": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasPinBench": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasPinCocoon": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasPinDreamPlant": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasPinGuardian": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasPinBlackEgg": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasPinShop": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasPinSpa": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasPinStag": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasPinTram": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "hasPinGhost": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -7316,13 +7316,13 @@
         },
         "openedTramLower": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "openedTramRestingGrounds": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -7352,7 +7352,7 @@
         },
         "vesselFragStagNest": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -7370,7 +7370,7 @@
         },
         "eggTempleVisited": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -7748,7 +7748,7 @@
         },
         "spiderCapture": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -7772,7 +7772,7 @@
         },
         "dreamNailConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -7857,13 +7857,14 @@
         },
         "fountainGeo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
-            "VarType": "System.Int32"
+            "VarType": "System.Int32",
+            "Additive": true
         },
         "fountainVesselSummoned": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -7875,7 +7876,7 @@
         },
         "enteredDreamWorld": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -7984,25 +7985,25 @@
         },
         "elderbugConvoGrimm": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "slyConvoGrimm": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "iseldaConvoGrimm": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "midwifeWeaverlingConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -8020,7 +8021,7 @@
         },
         "metBrum": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -8068,73 +8069,73 @@
         },
         "nymmSpoken": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "nymmCharmConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "nymmFinalConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugNymmConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "slyNymmConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "iseldaNymmConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "nymmMissedEggOpen": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugTroupeLeftConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "elderbugBrettaLeft": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "jijiGrimmConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "metDivine": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "divineFinalConvo": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -8188,7 +8189,7 @@
         },
         "unlockedCompletionRate": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -8542,7 +8543,7 @@
         },
         "hasGodfinder": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -8554,19 +8555,19 @@
         },
         "scaredFlukeHermitEncountered": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "scaredFlukeHermitReturned": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "enteredGGAtrium": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -8602,7 +8603,7 @@
         },
         "unlockedBossScenes": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Collections.Generic.List`1[System.String]"
         },
@@ -8614,7 +8615,7 @@
         },
         "godseekerSpokenAwake": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -8632,25 +8633,25 @@
         },
         "godseekerWaterwaysSpoken1": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "godseekerWaterwaysSpoken2": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "godseekerWaterwaysSpoken3": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "bossDoorEntranceTextSeen": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
@@ -8668,7 +8669,7 @@
         },
         "seenGGWastes": {
             "Sync": true,
-            "SyncType": "Player",
+            "SyncType": "Server",
             "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
@@ -10843,7 +10844,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -10884,7 +10885,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -11449,7 +11451,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -12192,7 +12194,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -12445,7 +12448,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -12716,7 +12719,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -13330,7 +13333,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -14052,7 +14056,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -14103,7 +14107,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -14133,7 +14138,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -14214,7 +14220,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -14794,7 +14801,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -14939,7 +14947,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -15029,7 +15038,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -15513,7 +15523,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -15533,7 +15544,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -15744,7 +15756,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -16118,7 +16131,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -16260,7 +16274,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -16393,7 +16407,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -17124,7 +17139,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -17134,7 +17150,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -17597,7 +17613,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -18603,7 +18620,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -18803,7 +18821,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -18833,7 +18852,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -19078,7 +19098,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -19360,7 +19380,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -19990,7 +20011,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -20370,7 +20392,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -20660,7 +20683,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -21857,7 +21880,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -21898,7 +21921,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -22079,7 +22103,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -22888,7 +22913,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -23089,7 +23115,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -23109,7 +23136,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -23139,7 +23167,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -23432,7 +23460,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -23706,7 +23735,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -24019,7 +24049,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -24253,7 +24284,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -24324,7 +24356,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -24515,7 +24547,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -24630,7 +24662,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -24951,7 +24983,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -25225,7 +25258,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -25795,7 +25829,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -26470,7 +26504,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -26541,7 +26576,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -26871,7 +26907,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -26953,7 +26990,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -27404,7 +27442,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -27447,7 +27486,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -28574,7 +28613,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -28685,7 +28725,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -28756,7 +28797,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -29483,7 +29524,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -30197,7 +30238,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -30277,7 +30319,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -30327,7 +30370,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -31121,7 +31164,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -31734,7 +31778,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -31897,7 +31941,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -32080,7 +32125,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -32090,7 +32136,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -32100,7 +32147,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -32110,7 +32158,8 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Server"
+                "SyncType": "Server",
+                "IgnoreSceneHost": true
             }
         },
         {
@@ -32578,7 +32627,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },
@@ -33572,7 +33621,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
+                "SyncType": "Server",
                 "IgnoreSceneHost": true
             }
         },

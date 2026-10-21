@@ -435,6 +435,9 @@ internal abstract class ServerManager : IServerManager {
 
         Logger.Info($"Received EnterScene data from ({id}, {playerData.Username}), new scene: {newSceneName}");
 
+        // A teleport of this player is over once it entered a scene
+        _teleportFlights.End(id);
+
         // Store it in their PlayerData object
         playerData.CurrentScene = newSceneName;
         playerData.Position = playerEnterScene.Position;
@@ -1513,6 +1516,17 @@ internal abstract class ServerManager : IServerManager {
 
         serverInfo.PlayerInfo = playerInfo;
 
+        // Progress this player has stored under fields that are now shared (masks, vessels, spells, story) is
+        // merged into the global save first, so the player keeps it and the other players receive it live
+        if (FullSynchronisation) {
+            var mergedProgress = ServerSaveData.MergePlayerProgressIntoGlobal(clientInfo.AuthKey);
+            foreach (var merged in mergedProgress) {
+                foreach (var otherId in _playerData.Keys) {
+                    _netServer.GetUpdateManagerForClient(otherId)?.SetSaveUpdate(merged.Key, merged.Value);
+                }
+            }
+        }
+
         // Obtain the save data for the connecting client and add it to the server info
         serverInfo.CurrentSave = ServerSaveData.GetCurrentSaveData(clientInfo.AuthKey);
 
@@ -1604,13 +1618,44 @@ internal abstract class ServerManager : IServerManager {
         }
 
         if (string.IsNullOrEmpty(target.CurrentScene)) {
-            updateManager.AddChatMessage($"{target.Username} is not in a scene yet");
+            // Between leaving a scene and entering the next one (or still loading after joining)
+            updateManager.AddChatMessage($"{target.Username} is changing scene, try again in a moment");
             return;
         }
 
+        if (Hkmp.Game.Client.TeleportRules.SceneBlockReason(target.CurrentScene) is { } targetReason) {
+            updateManager.AddChatMessage($"Can't teleport to {target.Username}: they are {targetReason}");
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(playerData.CurrentScene) &&
+            Hkmp.Game.Client.TeleportRules.SceneBlockReason(playerData.CurrentScene) is { } ownReason) {
+            updateManager.AddChatMessage($"Can't teleport: you are {ownReason}");
+            return;
+        }
+
+        // Two players teleporting to each other at once would swap places; the same player asking twice would
+        // teleport twice
+        var now = _teleportClock.Elapsed.TotalSeconds;
+        if (_teleportFlights.RefuseReason(id, target.Id, target.Username, now) is { } flightReason) {
+            updateManager.AddChatMessage(flightReason);
+            return;
+        }
+
+        _teleportFlights.Start(id, now);
         Logger.Info($"Teleporting ({id}, {playerData.Username}) to ({target.Id}, {target.Username}) in {target.CurrentScene}");
         updateManager.SetPlayerTeleport(target.CurrentScene, target.Position.X, target.Position.Y);
     }
+
+    /// <summary>
+    /// Players that are teleporting right now (see <see cref="Hkmp.Game.Client.TeleportFlights"/>).
+    /// </summary>
+    private readonly Hkmp.Game.Client.TeleportFlights _teleportFlights = new();
+
+    /// <summary>
+    /// Monotonic clock for <see cref="_teleportFlights"/>.
+    /// </summary>
+    private readonly System.Diagnostics.Stopwatch _teleportClock = System.Diagnostics.Stopwatch.StartNew();
 
     /// <summary>
     /// Callback method for when a chat message is received from a player.
@@ -1797,6 +1842,19 @@ internal abstract class ServerManager : IServerManager {
 
             playerSaveData[packet.SaveDataIndex] = packet.Value;
         } else if (varProps.SyncType == SaveDataMapping.SyncType.Server) {
+            // Shared levels that never go down (max masks, max soul, spell levels): an update that would lower them
+            // comes from a player with outdated data, so keep the stored value and correct that player
+            if (!varProps.Additive && pdVarName != null &&
+                SharedProgressRules.MonotonicIntFields.Contains(pdVarName) &&
+                ServerSaveData.GlobalSaveData.TryGetValue(packet.SaveDataIndex, out var storedValue) &&
+                EncodeUtil.DecodeSaveDataValue(pdVarName, storedValue) is int storedInt &&
+                EncodeUtil.DecodeSaveDataValue(pdVarName, packet.Value) is int incomingInt &&
+                SharedProgressRules.IsRegression(pdVarName, storedInt, incomingInt)) {
+                Logger.Info($"  Ignoring {pdVarName} {incomingInt} below shared value {storedInt}, correcting sender");
+                _netServer.GetUpdateManagerForClient(id)?.SetSaveUpdate(packet.SaveDataIndex, storedValue);
+                return;
+            }
+
             if (varProps.Additive) {
                 if (pdVarName == null) {
                     Logger.Debug("  Cannot decode value, name for variable is null");

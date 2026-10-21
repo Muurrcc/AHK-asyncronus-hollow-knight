@@ -456,16 +456,37 @@ internal class UiManager : IUiManager {
     /// Callback for the teleport button of the pause menu. Resumes the game the same way as the pause menu's own
     /// resume button: only hiding the menu (UIClosePauseMenu) left GameManager.isPaused set and the input handler
     /// stopped, so the hero could not move nor attack anymore, even after changing scene.
+    /// <para>A second press while the menu is closing (double click) is ignored: it would ask again and toggle the
+    /// pause a second time, pausing the game again.</para>
     /// </summary>
     private void OnTeleportPressed() {
+        var now = Time.realtimeSinceStartup;
+        if (now - _lastTeleportPressTime < TeleportPressCooldown) {
+            return;
+        }
+
+        _lastTeleportPressTime = now;
         RequestTeleportEvent?.Invoke();
 
         try {
-            UM.TogglePauseGame();
+            // Only resume if the pause menu is still open (TogglePauseGame would pause again otherwise)
+            if (UM.uiState == UIState.PAUSED) {
+                UM.TogglePauseGame();
+            }
         } catch (Exception e) {
             Logger.Warn($"Could not resume the game after teleport request: {e.Message}");
         }
     }
+
+    /// <summary>
+    /// Seconds during which further presses of the teleport button are ignored.
+    /// </summary>
+    private const float TeleportPressCooldown = 1f;
+
+    /// <summary>
+    /// Realtime of the last press of the teleport button.
+    /// </summary>
+    private float _lastTeleportPressTime = -1000f;
 
     /// <summary>
     /// Test helper: press the teleport button of the pause menu.

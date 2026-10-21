@@ -206,52 +206,28 @@ internal class SaveDataMapping {
     }
 
     /// <summary>
-    /// PlayerData fields that hold the live combat state of the local character (health, lifeblood, soul, hazard
-    /// respawn, ...). They are never networked, neither as global (Server) nor as player (Player) save data: every
-    /// player keeps its own values, and they are recomputed by the game on respawn/bench (CharmUpdate + MaxHealth
-    /// derive maxHealth/health from maxHealthBase and the equipped charms). Entries in save-data.json for these
-    /// names (if any are ever added) are forced to Sync=false, keeping their index so the protocol does not shift.
+    /// PlayerData fields that are never networked (live combat state and derived values), see
+    /// <see cref="SharedProgressRules.LocalOnlyPlayerDataFields"/>. Entries in save-data.json for these names (if
+    /// any are ever added) are forced to Sync=false, keeping their index so the protocol does not shift.
     /// </summary>
-    internal static readonly HashSet<string> LocalOnlyPlayerDataFields = [
-        "health", "maxHealth", "prevHealth", "healthBlue", "joniHealthBlue", "damagedBlue", "blockerHits",
-        "MPCharge", "MPReserve", "maxMP", "MPReserveCap", "focusMP_amount",
-        "isInvincible", "atBench", "hazardRespawnLocation", "hazardRespawnFacingRight"
-    ];
+    internal static HashSet<string> LocalOnlyPlayerDataFields => SharedProgressRules.LocalOnlyPlayerDataFields;
 
     /// <summary>
-    /// PlayerData fields that are individual per character but persistent (max masks/vessels, geo, charms,
-    /// respawn point, shade, dreamgate). If they are synced, they must be stored per player on the server
-    /// (<see cref="SyncType.Player"/>, never broadcast to the other players); a Server sync type would make one
-    /// player's value overwrite everybody's. World progress (doors, killed enemies, bosses, ...) stays
-    /// <see cref="SyncType.Server"/> and is not touched.
+    /// PlayerData fields that are individual per character but persistent, forced to <see cref="SyncType.Player"/>,
+    /// see <see cref="SharedProgressRules.PlayerSpecificDataFields"/>.
     /// </summary>
-    internal static readonly HashSet<string> PlayerSpecificDataFields = BuildPlayerSpecificDataFields();
-
-    private static HashSet<string> BuildPlayerSpecificDataFields() {
-        var set = new HashSet<string> {
-            "maxHealthBase", "heartPieces", "MPReserveMax", "vesselFragments", "soulLimited",
-            "geo", "geoPool", "nailDamage",
-            "charmSlots", "charmSlotsFilled", "equippedCharms", "overcharmed",
-            "fragileHealth_unbreakable", "fragileGreed_unbreakable", "fragileStrength_unbreakable",
-            "respawnScene", "respawnMarkerName", "respawnType", "mapZone",
-            "shadeScene", "shadeMapZone", "shadePositionX", "shadePositionY", "shadeHealth", "shadeMP",
-            "shadeFireballLevel", "shadeQuakeLevel", "shadeScreamLevel", "shadeSpecialType",
-            "dreamgateMapPos", "dreamGateScene", "dreamGateX", "dreamGateY"
-        };
-        for (var i = 1; i <= 40; i++) {
-            set.Add($"equippedCharm_{i}");
-        }
-
-        return set;
-    }
+    internal static HashSet<string> PlayerSpecificDataFields => SharedProgressRules.PlayerSpecificDataFields;
 
     /// <summary>
     /// Make sure the individual state of each character is never shared between players (see
-    /// <see cref="LocalOnlyPlayerDataFields"/> and <see cref="PlayerSpecificDataFields"/>).
+    /// <see cref="LocalOnlyPlayerDataFields"/> and <see cref="PlayerSpecificDataFields"/>) and that the progress
+    /// every player obtains is shared (<see cref="SharedProgressRules.SharedProgressFields"/>, forced to
+    /// <see cref="SyncType.Server"/>; any player may send it, not only the scene host).
     /// </summary>
     private void EnforceIndividualPlayerState() {
         var forcedLocal = 0;
         var forcedPlayer = 0;
+        var forcedShared = 0;
         foreach (var pair in PlayerDataVarProperties) {
             var props = pair.Value;
             if (LocalOnlyPlayerDataFields.Contains(pair.Key)) {
@@ -267,6 +243,32 @@ internal class SaveDataMapping {
                 props.IgnoreSceneHost = true;
                 props.Additive = false;
                 forcedPlayer++;
+            } else if (SharedProgressRules.SharedProgressFields.Contains(pair.Key)) {
+                var additive = SharedProgressRules.AdditiveSharedFields.Contains(pair.Key);
+                if (!props.Sync || props.SyncType != SyncType.Server || !props.IgnoreSceneHost ||
+                    props.Additive != additive) {
+                    Logger.Warn($"Save data '{pair.Key}' is shared progress, forcing SyncType Server");
+                    props.Sync = true;
+                    props.SyncType = SyncType.Server;
+                    props.IgnoreSceneHost = true;
+                    props.Additive = additive;
+                    forcedShared++;
+                }
+            }
+        }
+
+        foreach (var pair in PersistentBoolVarProperties) {
+            if (!SharedProgressRules.SharedPickups.Contains($"{pair.Key.Id}@{pair.Key.SceneName}")) {
+                continue;
+            }
+
+            var props = pair.Value;
+            if (!props.Sync || props.SyncType != SyncType.Server || !props.IgnoreSceneHost) {
+                Logger.Warn($"Pickup '{pair.Key}' gives shared progress, forcing SyncType Server");
+                props.Sync = true;
+                props.SyncType = SyncType.Server;
+                props.IgnoreSceneHost = true;
+                forcedShared++;
             }
         }
 
@@ -275,7 +277,7 @@ internal class SaveDataMapping {
         Logger.Info(
             $"Save sync: {serverCount} PlayerData fields shared (Server), {playerCount} per player (Player), " +
             $"{LocalOnlyPlayerDataFields.Count} local-only combat fields never synced " +
-            $"(forced local: {forcedLocal}, forced per player: {forcedPlayer})"
+            $"(forced local: {forcedLocal}, forced per player: {forcedPlayer}, forced shared: {forcedShared})"
         );
     }
 

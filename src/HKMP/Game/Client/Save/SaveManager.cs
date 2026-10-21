@@ -770,8 +770,11 @@ internal class SaveManager {
                 _lastPlayerData?.SetFloatInternal(name, decodedFloat);
                 pd.SetFloatInternal(name, decodedFloat);
             } else if (decodedObject is int decodedInt) {
+                var previousInt = pd.GetIntInternal(name);
                 _lastPlayerData?.SetIntInternal(name, decodedInt);
                 pd.SetIntInternal(name, decodedInt);
+                // Shared max values (masks, soul vessels) need the derived local state and the HUD refreshed now
+                _saveChanges.ApplySharedMaxChange(name, previousInt, decodedInt);
             } else if (decodedObject is string decodedString) {
                 _lastPlayerData?.SetStringInternal(name, decodedString);
                 pd.SetStringInternal(name, decodedString);
