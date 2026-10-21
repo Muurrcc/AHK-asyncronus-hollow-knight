@@ -66,6 +66,11 @@ public class ServerSettings : IServerSettings, IEquatable<ServerSettings> {
     public bool ArenaWaitForAllPlayers { get; set; } = true;
 
     /// <inheritdoc />
+    [SettingAlias("enemytarget", "nearesttarget", "targetnearest")]
+    [ModMenuSetting("Enemies Target Nearest", "Enemies go after the nearest player instead of only the scene host")]
+    public bool EnemiesTargetNearestPlayer { get; set; } = true;
+
+    /// <inheritdoc />
     [SettingAlias("naildmg")]
     [ModMenuSetting("Nail Damage", "The number of masks of damage that a player's nail swing deals")]
     public byte NailDamage { get; set; } = 1;

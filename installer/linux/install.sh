@@ -1,38 +1,63 @@
 #!/usr/bin/env bash
 # Asyncronus installer for Linux (Steam native or Proton). Counterpart of the Windows MSI.
 #
-#   ./install.sh [--game-dir DIR] [--status] [--force] [--keep-work]
+#   ./install.sh [--game-dir DIR] [--status] [--diagnose] [--verbose] [--force] [--keep-work]
 #
 #   --game-dir DIR  Hollow Knight folder (also accepts hollow_knight_Data or Managed). Env GAMEDIR does the same.
 #   --status        Only report where the game is and the state of Assembly-CSharp.dll; changes nothing.
+#   --diagnose      Print (and save to ~/asyncronus-diagnose.txt) system, .NET, Steam, game and mod state; changes nothing.
+#   --verbose       Show every step and the full output of the tools (also always written to the install log).
 #   --force         Do not abort if a Hollow Knight process seems to be running.
 #   --keep-work     Keep the temporary folder (debugging).
+#
+# Install log: ~/.local/state/asyncronus-install.log (override with ASY_LOG=file).
 #
 # What it does (same steps as the MSI): find the game, check sha256 of Assembly-CSharp.dll (original -> apply the
 # delta; already patched -> only update the mod; anything else -> abort without touching anything), back up what it
 # overwrites into hollow_knight_Data/Managed-vanilla-backup (+ asyncronus-backup.txt), generate MMHOOK_* with
 # PrePatcher + MonoMod HookGen run by the .NET runtime, copy the API and the mod to Managed/Mods/Asyncronus.
 # Requires: .NET runtime/SDK 8 or newer ("dotnet" in PATH, or in ~/.dotnet), sha256sum, bash 4+.
+# Re-exec with bash if started as "sh install.sh" (dash has no pipefail / arrays).
+[ -n "${BASH_VERSION:-}" ] || exec bash "$0" "$@"
 set -uo pipefail
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 # shellcheck source=lib.sh
 . "$SCRIPT_DIR/lib.sh"
 
+ORIG_ARGS="$*"
 GAME_ARG="${GAMEDIR:-}"
 STATUS_ONLY=0
+DIAGNOSE=0
+VERBOSE=0
 FORCE=0
 KEEP_WORK=0
 while [ $# -gt 0 ]; do
     case "$1" in
         --game-dir) [ $# -ge 2 ] || die "--game-dir needs a value"; GAME_ARG=$2; shift 2 ;;
         --status) STATUS_ONLY=1; shift ;;
+        --diagnose) DIAGNOSE=1; shift ;;
+        --verbose|-v) VERBOSE=1; shift ;;
         --force) FORCE=1; shift ;;
         --keep-work) KEEP_WORK=1; shift ;;
-        -h|--help) sed -n '2,16p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,13p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *) die "Unknown option: $1 (see --help)" ;;
     esac
 done
+
+# install log (plain text, appended): attach it when asking for help
+ASY_LOG="${ASY_LOG:-${XDG_STATE_HOME:-$HOME/.local/state}/asyncronus-install.log}"
+mkdir -p -- "$(dirname -- "$ASY_LOG")" 2>/dev/null || ASY_LOG=""
+if [ "$DIAGNOSE" -eq 1 ]; then
+    OUT_DIAG="$HOME/asyncronus-diagnose.txt"
+    diagnose_report 2>&1 | tee "$OUT_DIAG"
+    log "Diagnose saved in: $OUT_DIAG  (send this file)"
+    exit 0
+fi
+if [ -n "$ASY_LOG" ]; then
+    { printf '\n==== %s install.sh %s (bash %s) args: %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$SCRIPT_DIR" "$BASH_VERSION" "$ORIG_ARGS"; } >> "$ASY_LOG" 2>/dev/null
+fi
+vlog "uname: $(uname -a)"
 
 PAYLOAD="$SCRIPT_DIR/payload"
 DELTA_DLL="$SCRIPT_DIR/tools/AsyncronusDelta.dll"
@@ -46,8 +71,10 @@ HOOK_NAMES=(MMHOOK_Assembly-CSharp.dll MMHOOK_PlayMaker.dll MMHOOK_TeamCherry.TK
 
 OTHER_ASSEMBLY_MSG="Your Hollow Knight is not the version Asyncronus needs (build 1.5.12459, Unity 6), or it already has another Modding API or other changes in Assembly-CSharp.dll.
 What to do: in Steam, right click Hollow Knight > Properties > Installed files > Verify integrity of local files, and in the Betas tab choose \"None\". When Steam finishes, run this installer again.
-Native Linux build: its Assembly-CSharp.dll may differ from the Windows one, which the patch is made for. In that case force Proton: Properties > Compatibility > Force the use of a specific Steam Play compatibility tool (then Verify integrity so Steam downloads the Windows build).
 Note: if you use Lumafly or another manager with its own Modding API, this installation is not compatible with it."
+NATIVE_ASSEMBLY_MSG="This looks like the NATIVE LINUX build of Hollow Knight (no hollow_knight.exe) and its Assembly-CSharp.dll is not the Windows one that the patch is made for (expected: native and Windows builds differ).
+Use the Windows build through Proton: in Steam right click Hollow Knight > Properties > Compatibility > tick \"Force the use of a specific Steam Play compatibility tool\" and choose Proton 9 (or newer / Experimental). Then Properties > Installed files > Verify integrity of local files (Steam downloads the Windows files; hollow_knight.exe must appear in the game folder), start the game once, close it and run this installer again.
+If you want the native build supported, run './install.sh --diagnose' and send the output: the sha256 shown above tells us which file it is."
 
 # ---------------------------------------------------------------- dotnet
 [ -d "$HOME/.dotnet" ] && PATH="$PATH:$HOME/.dotnet"
@@ -81,13 +108,27 @@ if [ "$STATUS_ONLY" -eq 1 ]; then
     exit 0
 fi
 [ "$STATE" = Missing ] && die "Not a Hollow Knight folder (missing $MANAGED/Assembly-CSharp.dll)."
-[ "$STATE" = Other ] && die "$OTHER_ASSEMBLY_MSG"
-if [ "$FORCE" -ne 1 ] && game_running; then die "Hollow Knight is running. Close it completely and try again (or use --force)."; fi
-[ -w "$MANAGED" ] || die "No write permission on $MANAGED."
+if [ "$STATE" = Other ]; then
+    log "Assembly-CSharp.dll sha256: $(sha256_of "$MANAGED/Assembly-CSharp.dll")  (expected original: $VANILLA_SHA)"
+    if [ ! -f "$GAME/hollow_knight.exe" ]; then die "$NATIVE_ASSEMBLY_MSG"; fi
+    die "$OTHER_ASSEMBLY_MSG"
+fi
+if [ "$FORCE" -ne 1 ] && game_running; then die "Hollow Knight seems to be running (pid ${RUNNING_PID:-?}). Close it completely (also the Steam 'Stop' button) and try again, or use --force."; fi
+[ -w "$MANAGED" ] || die "No write permission on $MANAGED (owner/mode: $(stat -c '%U:%G %a' "$MANAGED" 2>/dev/null); you are $(id -un)). Do not use sudo: fix the ownership of the game folder instead."
 check_dotnet
 [ -f "$DELTA_DLL" ] || die "Missing tools/AsyncronusDelta.dll (incomplete package)."
 
-WORK=$(mktemp -d "${TMPDIR:-/tmp}/asyncronus.XXXXXXXX") || die "Could not create a temporary folder."
+# The work folder holds a copy of Managed (~100-200 MB). /tmp may be a small tmpfs: use a place with enough room.
+free_kb() { df -Pk "$1" 2>/dev/null | awk 'NR==2{print $4+0}'; }
+need_kb=$(( $(du -sk "$MANAGED" 2>/dev/null | cut -f1) + 60000 ))
+WORK_BASE="${TMPDIR:-/tmp}"
+if [ "$(free_kb "$WORK_BASE")" -lt "$need_kb" ]; then
+    vlog "$WORK_BASE has only $(free_kb "$WORK_BASE") KB free (need ~$need_kb KB): using the game drive instead"
+    WORK_BASE="$GAME/hollow_knight_Data"
+    [ "$(free_kb "$WORK_BASE")" -ge "$need_kb" ] || die "Not enough free disk space (about $((need_kb / 1024)) MB needed in ${TMPDIR:-/tmp} or in the game drive)."
+fi
+WORK=$(mktemp -d "$WORK_BASE/asyncronus.XXXXXXXX") || die "Could not create a temporary folder in $WORK_BASE."
+vlog "work folder: $WORK"
 cleanup() { if [ "$KEEP_WORK" -eq 1 ]; then log "Work folder kept: $WORK"; else rm -rf -- "$WORK"; fi; }
 trap cleanup EXIT
 
@@ -98,8 +139,9 @@ plan_add() { PLAN_NAMES+=("$1"); PLAN_SRCS+=("$2"); }
 
 if [ "$STATE" = Vanilla ]; then
     log "Applying the patch to Assembly-CSharp.dll..."
-    dotnet "$DELTA_DLL" apply "$MANAGED/Assembly-CSharp.dll" "$PAYLOAD/Assembly-CSharp.patch" "$WORK/patched-Assembly-CSharp.dll" >/dev/null \
-        || die "Could not apply the patch (is the game file the original?)."
+    dotnet "$DELTA_DLL" apply "$MANAGED/Assembly-CSharp.dll" "$PAYLOAD/Assembly-CSharp.patch" "$WORK/patched-Assembly-CSharp.dll" > "$WORK/delta.log" 2>&1 \
+        || { _tolog "$(cat "$WORK/delta.log")"; die "Could not apply the patch: $(head -c 400 "$WORK/delta.log")"; }
+    if [ "$VERBOSE" -eq 1 ]; then cat "$WORK/delta.log" >&2; fi
     [ "$(sha256_of "$WORK/patched-Assembly-CSharp.dll")" = "$PATCHED_SHA" ] || die "The patched Assembly-CSharp.dll has an unexpected hash."
     plan_add Assembly-CSharp.dll "$WORK/patched-Assembly-CSharp.dll"
 fi
@@ -121,6 +163,8 @@ run_tool() { # dir exe args...
     log "> $exe $*"
     ( cd -- "$wd" && dotnet "$exe" "$@" ) > "$WORK/tool.log" 2>&1
     local rc=$?
+    if [ "$VERBOSE" -eq 1 ]; then cat "$WORK/tool.log" >&2; fi
+    _tolog "$exe exit code $rc"; [ $rc -eq 0 ] || _tolog "$(cat "$WORK/tool.log")"
     if [ $rc -ne 0 ]; then
         local keep="${XDG_STATE_HOME:-$HOME/.local/state}/asyncronus-error-log.txt"
         mkdir -p -- "$(dirname -- "$keep")" 2>/dev/null

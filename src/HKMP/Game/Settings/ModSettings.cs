@@ -36,6 +36,16 @@ internal class ModSettings {
     public string Username { get; set; }
 
     /// <summary>
+    /// Whether to use the Steam profile name as username (when Steam is available) instead of the typed username.
+    /// </summary>
+    public bool UseSteamName { get; set; } = true;
+
+    /// <summary>
+    /// The skin ID chosen by the user. Sent to the server on every connection and applied when entering the game.
+    /// </summary>
+    public byte SkinId { get; set; }
+
+    /// <summary>
     /// Whether to display a UI element for the ping.
     /// </summary>
     public bool DisplayPing { get; set; }

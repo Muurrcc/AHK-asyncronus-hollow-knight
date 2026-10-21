@@ -112,6 +112,35 @@ internal class SteamBridgeService {
     }
 
     /// <summary>
+    /// Try to get the Steam profile name (persona name) of the logged in user.
+    /// </summary>
+    /// <param name="name">The raw persona name.</param>
+    /// <returns>True if Steam is running, initialized by the game, and has a non-empty name.</returns>
+    public static bool TryGetOwnPersonaName(out string name) {
+        name = null;
+        try {
+            if (!SteamAPI.IsSteamRunning()) {
+                return false;
+            }
+
+            name = SteamFriends.GetPersonaName();
+            return !string.IsNullOrWhiteSpace(name);
+        } catch (Exception e) {
+            Logger.Debug($"Steam: persona name not available: {e.GetType().Name}: {e.Message}");
+            name = null;
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Get the username derived from the Steam profile name, if Steam is available and the name has usable
+    /// characters (see <see cref="UsernameRules.FromProfileName"/>).
+    /// </summary>
+    public static string GetSteamUsername() {
+        return TryGetOwnPersonaName(out var name) ? UsernameRules.FromProfileName(name) : null;
+    }
+
+    /// <summary>
     /// Try to get the join code of the logged in user.
     /// </summary>
     /// <param name="code">The formatted code.</param>

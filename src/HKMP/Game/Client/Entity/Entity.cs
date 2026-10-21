@@ -309,6 +309,17 @@ internal class Entity {
     }
 
     /// <summary>
+    /// Whether the host object of this entity is simulated locally, i.e. the local player is the scene host and the
+    /// entity is no longer controlled by updates from the server.
+    /// </summary>
+    public bool IsHostSimulated => _isSceneHostDetermined && !_isControlled;
+
+    /// <summary>
+    /// The FSMs on the host object of this entity.
+    /// </summary>
+    public IReadOnlyList<PlayMakerFSM> HostFsms => _fsms.Host;
+
+    /// <summary>
     /// The health manager component of this entity, or null if it has none.
     /// </summary>
     public HealthManagerComponent HealthComponent =>

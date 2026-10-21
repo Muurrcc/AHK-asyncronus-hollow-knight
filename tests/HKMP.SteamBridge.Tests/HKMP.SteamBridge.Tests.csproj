@@ -28,10 +28,13 @@
         <Compile Include="$(HkmpSrc)\Networking\SteamBridge\SteamBridgeSleep.cs" Link="Linked\SteamBridgeSleep.cs" />
         <!-- Pure gameplay logic (enemy health scaling, arena entry rules) -->
         <Compile Include="$(HkmpSrc)\Game\Client\Entity\EnemyHealthScaling.cs" Link="Linked\EnemyHealthScaling.cs" />
+        <Compile Include="$(HkmpSrc)\Game\Client\Entity\EnemyTargetSelector.cs" Link="Linked\EnemyTargetSelector.cs" />
         <Compile Include="$(HkmpSrc)\Game\Client\ArenaEntryRules.cs" Link="Linked\ArenaEntryRules.cs" />
         <Compile Include="$(HkmpSrc)\Game\Client\TeleportTargetSelector.cs" Link="Linked\TeleportTargetSelector.cs" />
+        <Compile Include="$(HkmpSrc)\Game\Client\TeleportRules.cs" Link="Linked\TeleportRules.cs" />
         <Compile Include="$(HkmpSrc)\Util\SafeFile.cs" Link="Linked\SafeFile.cs" />
         <Compile Include="$(HkmpSrc)\Util\SaveFileFormat.cs" Link="Linked\SaveFileFormat.cs" />
+        <Compile Include="$(HkmpSrc)\Util\UsernameRules.cs" Link="Linked\UsernameRules.cs" />
         <None Include="$(HkmpSrc)\Resource\save-data.json" Link="save-data.json" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 

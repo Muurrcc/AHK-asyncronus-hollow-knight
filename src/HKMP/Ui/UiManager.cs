@@ -245,15 +245,7 @@ internal class UiManager : IUiManager {
             new Vector2(1920f - 160f, 1080f - 60f),
             "Teleport / TP"
         );
-        teleportButton.SetOnPress(() => {
-            RequestTeleportEvent?.Invoke();
-
-            try {
-                UM.UIClosePauseMenu();
-            } catch (Exception e) {
-                Logger.Warn($"Could not close pause menu after teleport request: {e.Message}");
-            }
-        });
+        teleportButton.SetOnPress(OnTeleportPressed);
 
         // Register callbacks to make sure the UI is hidden and shown at correct times
         On.UIManager.SetState += (orig, self, state) => {
@@ -458,6 +450,28 @@ internal class UiManager : IUiManager {
             GM.gameSettings.brightnessAdjusted = 1;
             UM.StartNewGame();
         }
+    }
+
+    /// <summary>
+    /// Callback for the teleport button of the pause menu. Resumes the game the same way as the pause menu's own
+    /// resume button: only hiding the menu (UIClosePauseMenu) left GameManager.isPaused set and the input handler
+    /// stopped, so the hero could not move nor attack anymore, even after changing scene.
+    /// </summary>
+    private void OnTeleportPressed() {
+        RequestTeleportEvent?.Invoke();
+
+        try {
+            UM.TogglePauseGame();
+        } catch (Exception e) {
+            Logger.Warn($"Could not resume the game after teleport request: {e.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Test helper: press the teleport button of the pause menu.
+    /// </summary>
+    internal void DevPressTeleport() {
+        OnTeleportPressed();
     }
 
     /// <summary>

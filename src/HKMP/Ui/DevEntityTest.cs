@@ -352,6 +352,12 @@ internal static partial class DevEntityTest {
         Signal($"ready-{_role}");
         yield return WaitSignal($"ready-{(_role == "p1" ? "p2" : "p1")}", 600f);
 
+        var targetScene = GetOption("-hkmp-test-target");
+        if (!string.IsNullOrEmpty(targetScene)) {
+            var p = targetScene.Split(':');
+            yield return EnemyTargetTest(p[0], p.Length > 1 ? p[1] : "left1");
+        }
+
         var health = (GetOption("-hkmp-test-health") ?? "").ToLowerInvariant();
         if (health == "1" || health == "only") {
             yield return PlayerHealthTest();

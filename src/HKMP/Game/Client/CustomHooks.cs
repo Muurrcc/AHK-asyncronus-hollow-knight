@@ -81,6 +81,14 @@ public static class CustomHooks {
     public static event Action AfterEnterSceneHeroTransformed;
 
     /// <summary>
+    /// Raise <see cref="AfterEnterSceneHeroTransformed"/> for scene entries that the IL hooks do not cover (the
+    /// teleport enters the scene through a hazard respawn).
+    /// </summary>
+    internal static void InvokeAfterEnterSceneHeroTransformed() {
+        AfterEnterSceneHeroTransformed?.Invoke();
+    }
+
+    /// <summary>
     /// Event for when the AudioManager.ApplyMusicCue method is called from the ApplyMusicCue FSM action.
     /// </summary>
     public static event Action<ApplyMusicCue> ApplyMusicCueFromFsmAction;

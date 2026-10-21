@@ -18,6 +18,12 @@ internal class SkinManager {
     /// </summary>
     private PlayerSkin _defaultPlayerSkin;
 
+    /// <summary>
+    /// The skin ID currently assigned to the local player. Remembered so that it can be (re)applied whenever the
+    /// local hero object is created (entering the game after the server accepted the skin).
+    /// </summary>
+    private byte _localSkinId;
+
     public SkinManager() {
         _playerSkins = new Dictionary<byte, PlayerSkin>();
     }
@@ -56,6 +62,12 @@ internal class SkinManager {
         }
 
         InitializeSpritesOnLocalPlayer(HeroController.instance.gameObject);
+
+        // The server may have assigned our skin before this hero existed (connecting from the main menu)
+        if (_localSkinId != 0) {
+            Logger.Debug($"Applying stored local skin {_localSkinId} on hero start");
+            UpdatePlayerSkin(HeroController.instance.gameObject, _localSkinId);
+        }
     }
 
     /// <summary>
@@ -135,6 +147,8 @@ internal class SkinManager {
     /// </summary>
     /// <param name="skinId">The ID of the skin to apply.</param>
     public void UpdateLocalPlayerSkin(byte skinId) {
+        _localSkinId = skinId;
+
         var heroController = HeroController.instance;
         if (heroController == null) {
             Logger.Warn("Tried to update local player skin, but HeroController instance is null");

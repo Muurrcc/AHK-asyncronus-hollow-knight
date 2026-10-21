@@ -276,8 +276,16 @@ internal class ConnectInterface {
             _modSettings.Username,
             "Username",
             characterLimit: 20,
-            onValidateInput: (_, _, addedChar) => char.IsLetterOrDigit(addedChar) ? addedChar : '\0'
+            onValidateInput: (_, _, addedChar) => UsernameRules.IsValidChar(addedChar) ? addedChar : '\0'
         );
+
+        // Default to the Steam profile name (the typed/saved username is the fallback without Steam)
+        if (_modSettings.UseSteamName) {
+            var steamUsername = SteamBridgeService.GetSteamUsername();
+            if (steamUsername != null) {
+                _usernameInput.SetInput(steamUsername);
+            }
+        }
 
         y -= InputComponent.DefaultHeight + 20f;
 
@@ -550,6 +558,14 @@ internal class ConnectInterface {
 
     private bool ValidateUsername(out string username) {
         username = _usernameInput.GetInput();
+
+        if (_modSettings.UseSteamName) {
+            var steamUsername = SteamBridgeService.GetSteamUsername();
+            if (steamUsername != null) {
+                username = steamUsername;
+                _usernameInput.SetInput(username);
+            }
+        }
 
         if (username.Length == 0) {
             SetFeedbackText(Color.red, "Failed to connect:\nYou must enter a username");

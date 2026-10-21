@@ -2,7 +2,7 @@
 
 Asyncronus on Linux: Steam with **Proton** (Windows build of the game, recommended) or the **native Linux build**. Steam Deck / SteamOS included.
 
-> **Status: not tested on a real Linux machine yet.** The installer script was run end to end (patch, hook generation, install, uninstall, byte-identical restore) against a copy of the original `Managed` folder, using the same .NET 8 runtime on Windows through Git Bash. Nothing has been run inside Hollow Knight on Linux. See [Not verified](#not-verified).
+> **Status: not confirmed on a real Linux machine yet** (testers reported it did not work; see [If it does not work](#if-it-does-not-work-si-no-funciona)). The installer script was run end to end (patch, hook generation, install, uninstall, byte-identical restore) against a copy of the original `Managed` folder, using the same .NET 8 runtime on Windows through Git Bash. Nothing has been run inside Hollow Knight on Linux. See [Not verified](#not-verified).
 
 ## Requirements
 
@@ -36,8 +36,10 @@ On Steam Deck do **not** unlock the read-only system partition: use the no-root 
 ```bash
 tar xzf Asyncronus-linux-*.tar.gz
 cd Asyncronus-linux-*/
-./install.sh
+bash install.sh
 ```
+
+`bash install.sh` works even if the folder is on a drive mounted `noexec` (USB, SD card, NTFS) or the executable bit was lost; `./install.sh` is equivalent when it is executable.
 
 It finds the game by itself (`~/.local/share/Steam`, `~/.steam/steam`, Flatpak, Snap and every library in `libraryfolders.vdf`). If it cannot, or you have several copies, pass the folder:
 
@@ -45,7 +47,7 @@ It finds the game by itself (`~/.local/share/Steam`, `~/.steam/steam`, Flatpak, 
 ./install.sh --game-dir "/mnt/games/SteamLibrary/steamapps/common/Hollow Knight"
 ```
 
-Other options: `--status` (shows where the game is and the state of `Assembly-CSharp.dll`, changes nothing), `--force` (skip the "game is running" check), `--keep-work` (keep the temporary folder for debugging).
+Other options: `--status` (shows where the game is and the state of `Assembly-CSharp.dll`, changes nothing), `--diagnose` (prints and saves a full report, changes nothing, see [If it does not work](#if-it-does-not-work-si-no-funciona)), `--verbose` (shows every step and the full tool output), `--force` (skip the "game is running" check), `--keep-work` (keep the temporary folder for debugging).
 
 What it does, in order: checks the sha256 of `Assembly-CSharp.dll` (original -> continues; already patched -> only updates the mod; anything else -> aborts without touching anything), applies the binary delta, generates the four `MMHOOK_*.dll` on your machine with PrePatcher + MonoMod HookGen, backs up what it overwrites into `hollow_knight_Data/Managed-vanilla-backup/` (plus `asyncronus-backup.txt`, the log of changes), copies the API and the mod to `Managed/Mods/Asyncronus/`, and verifies the final hash. If anything fails it reverts. It takes 15-30 seconds. **To update**, extract the newer package and run `./install.sh` again.
 
@@ -80,21 +82,50 @@ It restores `Assembly-CSharp.dll` from `Managed-vanilla-backup`, removes the fil
 | Game | `<library>/steamapps/common/Hollow Knight/` | same |
 | Mod | `hollow_knight_Data/Managed/Mods/Asyncronus/` | same |
 | Saves and `ModLog.txt` | `<library>/steamapps/compatdata/367520/pfx/drive_c/users/steamuser/AppData/LocalLow/Team Cherry/Hollow Knight/` | `~/.config/unity3d/Team Cherry/Hollow Knight/` |
-| Installer error log | `~/.local/state/asyncronus-error-log.txt` (only when a tool fails) | same |
+| Installer log | `~/.local/state/asyncronus-install.log` (every run) and `~/.local/state/asyncronus-error-log.txt` (only when a tool fails) | same |
+| Diagnose report | `~/asyncronus-diagnose.txt` (written by `--diagnose`) | same |
 
 ## Troubleshooting
 
 - **"Hollow Knight not found"**: use `--game-dir`. For Flatpak Steam, a library outside your home needs permission: `flatpak override --user --filesystem=/path/to/library com.valvesoftware.Steam`. The installer itself runs outside the sandbox and only needs write access to the game folder.
 - **".NET not found / runtime 8 or newer is required"**: install .NET (above). With only .NET 9 or 10 it works too (the tools are forced to roll forward).
 - **"Your Hollow Knight is not the version Asyncronus needs"**: *Verify integrity of local files*, *Betas > None*. On the native build, force Proton (see Requirements) and verify integrity again. Lumafly or another Modding API on the same install is not compatible.
-- **Hook generation fails**: the full output is saved in `~/.local/state/asyncronus-error-log.txt`; attach it to an issue. If it says a game file is damaged, verify integrity in Steam.
+- **Hook generation fails**: the full output is saved in `~/.local/state/asyncronus-error-log.txt`; attach it to an issue. If it says a game file is damaged, verify integrity in Steam. More in [If it does not work](#if-it-does-not-work-si-no-funciona).
 - **No "Start Multiplayer" in the menu**: check `ModLog.txt` (see table). It must list `Asyncronus`/`HKMP` among the loaded mods and `Modding API: 0.0.0.0-77`.
 - **Cannot join by code**: both players need Steam open and logged in, same mod version, and the host must be in *Start Hosting*. A direct IP connection needs UDP port 26950 reachable (firewall/router).
 - **Copy-code button does nothing**: Unity's clipboard needs X11/XWayland; type the code by hand.
 
+## If it does not work (Si no funciona)
+
+The Linux build has not been confirmed on a real machine yet, so a precise report is what lets us fix it. **Please send us these three things** (open an issue or send them to whoever gave you the mod):
+
+1. **The output of the diagnose command**, run from the extracted folder (it also saves it to `~/asyncronus-diagnose.txt`; send that file):
+   ```bash
+   bash install.sh --diagnose
+   ```
+   It lists distro, Steam Deck or not, bash/.NET versions, the Steam libraries it found, whether the game is the Windows (Proton) or native build, the `sha256` of `Assembly-CSharp.dll`, the files installed, and the last lines of `ModLog.txt`. It contains no passwords or tokens; it does contain your user name and folder paths.
+2. **The install log**: `~/.local/state/asyncronus-install.log` (and `~/.local/state/asyncronus-error-log.txt` if it exists). For a full trace, run again with `bash install.sh --verbose` and send the log.
+3. **`ModLog.txt`** after starting the game once (location in [Where things are](#where-things-are)). Under Proton it is inside the Wine prefix: `<library>/steamapps/compatdata/367520/pfx/drive_c/users/steamuser/AppData/LocalLow/Team Cherry/Hollow Knight/ModLog.txt`. If the file does not exist at all, the game never loaded the patched `Assembly-CSharp.dll`: say so, and also tell us which Proton version is selected (or that you use the native build).
+
+Also tell us **where it fails**: the installer prints an error, the installer finishes but the game has no *Start Multiplayer*, the game does not start, or hosting/joining fails.
+
+Quick checks before sending anything:
+
+| Symptom | Cause / fix |
+|---|---|
+| `bash\r: No such file or directory`, `$'\r': command not found`, `invalid option name` | The scripts have Windows line endings (very old package, or edited on Windows). Download the package again, or `sed -i 's/\r$//' *.sh` inside the folder |
+| `Permission denied` running `./install.sh` | Lost executable bit or `noexec` mount: use `bash install.sh` |
+| `Hollow Knight not found` | `bash install.sh --game-dir "/path/to/Hollow Knight"` (paths with spaces need the quotes) |
+| `This looks like the NATIVE LINUX build` | Expected: the patch is for the Windows `Assembly-CSharp.dll`. Force Proton (see Requirements), *Verify integrity*, start the game once, install again |
+| `.NET not found` / `runtime 8 or newer` | Install .NET (see above); `dotnet --list-runtimes` must show `Microsoft.NETCore.App 8.x` or newer |
+| `No write permission` | Do not use `sudo`. The game folder must belong to your user (`ls -ld` it); on a drive mounted read-only or NTFS without permissions, mount it with your user as owner |
+| Installer says OK but no *Start Multiplayer* | Check `ModLog.txt` (above). Make sure the game is launched with Proton (not native) and Steam *Launch options* are empty |
+
+Steps to start from a clean state: `bash uninstall.sh`, Steam > *Verify integrity of local files*, then install again.
+
 ## Linux notes (technical)
 
-- **Portability review of the code.** No change was needed in `src/`. The mod has no `DllImport`, registry or Windows path code; its paths use `Path.Combine`, `Application.dataPath` and the mod's own folder (`Assembly.Location`). The Steam bridge only uses Steamworks.NET from the game (`com.rlabrecque.steamworks.net.dll`: `ISteamNetworkingSockets`, `SteamUser`) and loopback UDP sockets.
+- **Portability review of the code.** No change was needed in `src/`. The only `DllImport`s (`kernel32` waitable timer in `SteamBridgeSleep.cs`) are guarded by a `PlatformID.Win32NT` check plus `try/catch` and fall back to `Thread.Sleep`; under Proton it uses the Wine implementation. The mod has no registry or Windows path code; its paths use `Path.Combine`, `Application.dataPath` and the mod's own folder (`Assembly.Location`). The Steam bridge only uses Steamworks.NET from the game (`com.rlabrecque.steamworks.net.dll`: `ISteamNetworkingSockets`, `SteamUser`) and loopback UDP sockets.
 - **Steamworks.** On the native build the game's Steamworks.NET resolves `libsteam_api.so` (shipped in `hollow_knight_Data/Plugins`) and talks to the running Steam client; under Proton the Windows `steam_api64.dll` goes through Proton's `lsteamclient` to the native client. The game already calls `SteamAPI.RunCallbacks` every frame, so the bridge does not. Steam networking sockets (relay, `InitRelayNetworkAccess`) need an up-to-date Steam client.
 - **The Windows build tools run on Linux without Mono.** `PrePatcher.exe` and `MonoMod.RuntimeDetour.HookGen.exe` are plain IL assemblies; the script runs them with `dotnet X.exe` after writing a `X.runtimeconfig.json` next to them. Output was checked on .NET 8: the four `MMHOOK_*` files have exactly the sizes recorded in `payload.ini`.
 - **Delta.** `installer/linux/delta-tool` is a net8 wrapper around the same `Delta.cs` as the MSI (custom `ASYNPAT1` format, not stock `bspatch`), so the Linux and Windows results are the same file (sha256 `e13818bb...`).
@@ -107,7 +138,7 @@ It restores `Assembly-CSharp.dll` from `Managed-vanilla-backup`, removes the fil
 - That the native Linux `Assembly-CSharp.dll` matches the Windows hash (if not, use Proton).
 - The Steam relay (P2P) under Proton and with `libsteam_api.so`; the Windows two-account test is also still pending (see README, *Known limitations*).
 - Flatpak/Snap Steam layouts and Steam Deck game mode (script written from the usual paths, never run there).
-- `shellcheck` and `bash -n` are clean.
+- `shellcheck` and `bash -n` are clean. The 1.2.0 package shipped the scripts with Windows (CRLF) line endings, which Git Bash tolerates but Linux bash does not (that is why the earlier Windows test passed); `make-package.sh` now converts them to LF, sets the executable bit explicitly and verifies the final archive.
 
 ## Building the Linux package
 
@@ -116,5 +147,7 @@ On a machine with the .NET SDK 8+, after `installer/build.ps1` has produced `ins
 ```bash
 installer/linux/make-package.sh            # -> dist/Asyncronus-linux-X.Y.Z.tar.gz
 ```
+
+`make-package.sh` normalises line endings (LF), sets permissions (755 for the two scripts, 644 for the rest), and re-opens the generated archive to check line endings, executable bits and required files before printing `OK`.
 
 It contains `install.sh`, `uninstall.sh`, `lib.sh`, `tools/AsyncronusDelta.dll` and `payload/` (the same payload as the MSI: delta, third-party libraries, mod, HookGen tools). No game code.

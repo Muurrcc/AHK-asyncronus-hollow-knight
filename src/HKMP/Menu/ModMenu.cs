@@ -245,7 +245,7 @@ internal class ModMenu {
                         Options = skinOptions,
                         Label = "Skin",
                         ApplySetting = (_, _) => { },
-                        RefreshSetting = (s, _) => s.optionList.SetOptionTo(0),
+                        RefreshSetting = (s, _) => s.optionList.SetOptionTo(_modSettings.SkinId),
                         CancelAction = _ => UIManager.instance.UIGoToDynamicMenu(_hkmpMenu),
                         Description = new DescriptionInfo {
                             Text = ""
@@ -270,6 +270,13 @@ internal class ModMenu {
                             Values = ["Off", "On"],
                             Saver = index => _modSettings.DisplayPing = index == 1,
                             Loader = () => _modSettings.DisplayPing ? 1 : 0
+                        },
+                        new IMenuMod.MenuEntry {
+                            Name = "Steam Name",
+                            Description = "Use your Steam profile name as username when Steam is available",
+                            Values = ["Off", "On"],
+                            Saver = index => _modSettings.UseSteamName = index == 1,
+                            Loader = () => _modSettings.UseSteamName ? 1 : 0
                         },
                         new IMenuMod.MenuEntry {
                             Name = "Steam Code Bridge",

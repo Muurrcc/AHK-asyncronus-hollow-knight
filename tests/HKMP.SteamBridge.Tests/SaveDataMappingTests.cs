@@ -17,25 +17,21 @@ public class SaveDataMappingTests {
     [Theory]
     [InlineData("grubsCollected")]
     [InlineData("scenesGrubRescued")]
-    [InlineData("grubRewards")]
-    [InlineData("finalGrubRewardCollected")]
-    [InlineData("fatGrubKing")]
-    [InlineData("hasPinGrub")]
-    public void GrubPlayerData_IsPerPlayer(string field) {
+    public void GrubProgress_IsSharedBetweenPlayers(string field) {
         var props = Root.GetProperty("playerData").GetProperty(field);
-        Assert.Equal("Player", props.GetProperty("SyncType").GetString());
-        Assert.False(props.TryGetProperty("Additive", out var additive) && additive.GetBoolean());
+        Assert.Equal("Server", props.GetProperty("SyncType").GetString());
+        Assert.True(props.GetProperty("Additive").GetBoolean());
     }
 
     [Fact]
-    public void GrubJars_ArePerPlayer() {
+    public void GrubJars_AreSharedBetweenPlayers() {
         var jars = Root.GetProperty("persistentBoolItems").EnumerateArray()
             .Where(i => i.GetProperty("Key").GetProperty("id").GetString().Contains("Grub") &&
                         i.GetProperty("Key").GetProperty("id").GetString().Contains("Bottle"))
             .ToList();
 
         Assert.NotEmpty(jars);
-        Assert.All(jars, jar => Assert.Equal("Player", jar.GetProperty("Value").GetProperty("SyncType").GetString()));
+        Assert.All(jars, jar => Assert.Equal("Server", jar.GetProperty("Value").GetProperty("SyncType").GetString()));
     }
 
     [Fact]

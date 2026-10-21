@@ -4,6 +4,8 @@
 # Managed/Mods/Asyncronus. Never touches other mods or saves.
 #
 #   ./uninstall.sh [--game-dir DIR] [--force]
+# Re-exec with bash if started as "sh uninstall.sh".
+[ -n "${BASH_VERSION:-}" ] || exec bash "$0" "$@"
 set -uo pipefail
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
@@ -23,7 +25,7 @@ done
 
 resolve_game "$GAME_ARG"
 log "Game: $GAME ($(game_flavour "$GAME"))"
-if [ "$FORCE" -ne 1 ] && game_running; then die "Hollow Knight is running. Close it completely and try again (or use --force)."; fi
+if [ "$FORCE" -ne 1 ] && game_running; then die "Hollow Knight seems to be running (pid ${RUNNING_PID:-?}). Close it completely and try again (or use --force)."; fi
 
 do_uninstall
 ok "Uninstall finished. To be 100% sure the game is vanilla, you can also use Steam > Properties > Installed files > Verify integrity."

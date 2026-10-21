@@ -136,4 +136,10 @@ public interface IServerSettings {
     /// every player in the scene is inside the arena trigger.
     /// </summary>
     public bool ArenaWaitForAllPlayers { get; }
+
+    /// <summary>
+    /// Whether enemies (simulated by the scene host) go after the nearest player in the scene, instead of only the
+    /// scene host. A new target is only chosen when it is clearly closer, so enemies do not flip between players.
+    /// </summary>
+    public bool EnemiesTargetNearestPlayer { get; }
 }

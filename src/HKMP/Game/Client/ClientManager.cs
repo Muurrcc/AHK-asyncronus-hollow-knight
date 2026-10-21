@@ -107,6 +107,11 @@ internal class ClientManager : IClientManager {
     private readonly ArenaEntryGate _arenaEntryGate;
 
     /// <summary>
+    /// Makes enemies simulated by the scene host go after the nearest player.
+    /// </summary>
+    private readonly EnemyTargetManager _enemyTargetManager;
+
+    /// <summary>
     /// The client addon manager instance.
     /// </summary>
     private readonly ClientAddonManager _addonManager;
@@ -248,6 +253,7 @@ internal class ClientManager : IClientManager {
         _gamePatcher = new GamePatcher(netClient);
         _fsmPatcher = new FsmPatcher();
         _arenaEntryGate = new ArenaEntryGate(serverSettings, _playerData);
+        _enemyTargetManager = new EnemyTargetManager(serverSettings, _playerData);
 
         _commandManager = new ClientCommandManager();
         var eventAggregator = new EventAggregator();
@@ -325,6 +331,7 @@ internal class ClientManager : IClientManager {
             _entityManager.RegisterHooks();
             _saveManager.RegisterHooks();
             _arenaEntryGate.RegisterHooks();
+            _enemyTargetManager.RegisterHooks();
         }
         
         // Register handlers for various things
@@ -354,6 +361,7 @@ internal class ClientManager : IClientManager {
             _entityManager.DeregisterHooks();
             _saveManager.DeregisterHooks();
             _arenaEntryGate.DeregisterHooks();
+            _enemyTargetManager.DeregisterHooks();
         }
         
         // Deregister handlers for various things
@@ -681,6 +689,10 @@ internal class ClientManager : IClientManager {
         }
 
         UpdateEnemyHealthScaling();
+
+        // The server starts every connection with skin 0, so send the skin the user chose earlier. The reply is
+        // applied to the local hero immediately or, if there is no hero yet, when it is created (SkinManager).
+        SendSavedSkin();
         
         // Add the username to the player if we are in-game already
         if (HeroController.instance && HeroController.instance.gameObject) {
@@ -699,6 +711,18 @@ internal class ClientManager : IClientManager {
         }
     }
     
+    /// <summary>
+    /// Send the skin ID that is stored in the settings to the server, if skins are allowed and it is not the default.
+    /// </summary>
+    private void SendSavedSkin() {
+        if (_modSettings.SkinId == 0 || !_serverSettings.AllowSkins || !_netClient.IsConnected) {
+            return;
+        }
+
+        Logger.Info($"Sending saved skin ID {_modSettings.SkinId} to the server");
+        _netClient.UpdateManager.AddPlayerSettingUpdate(skinId: _modSettings.SkinId);
+    }
+
     /// <summary>
     /// Callback method for when the HeroController is started so we can add the username to the player object.
     /// </summary>
@@ -1298,6 +1322,9 @@ internal class ClientManager : IClientManager {
         if (settingUpdate.UpdateTypes.Contains(PlayerSettingUpdateType.Skin)) {
             if (settingUpdate.Self) {
                 _playerManager.OnPlayerSkinUpdate(true, settingUpdate.SkinId);
+
+                // The server accepted our skin (chosen in the menu or by a command): remember it for next time
+                _modSettings.SkinId = settingUpdate.SkinId;
                 
                 SkinChangedEvent?.Invoke(settingUpdate.SkinId);
             } else {

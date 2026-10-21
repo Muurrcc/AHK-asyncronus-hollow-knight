@@ -1418,7 +1418,7 @@ internal abstract class ServerManager : IServerManager {
         }
 
         foreach (var character in clientInfo.Username) {
-            if (!char.IsLetterOrDigit(character)) {
+            if (!UsernameRules.IsValidChar(character)) {
                 Logger.Debug("  Client has invalid characters in username, rejected connection");
 
                 serverInfo.ConnectionResult = ServerConnectionResult.RejectedOther;

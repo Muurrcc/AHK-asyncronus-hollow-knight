@@ -507,7 +507,7 @@ internal class PlayerManager {
         var textMeshObject = nameObject.GetOrAddComponent<TextMeshPro>();
 
         if (textMeshObject) {
-            textMeshObject.text = name.ToUpper();
+            textMeshObject.text = UsernameRules.ToDisplayName(name).ToUpper();
             ChangeNameColor(textMeshObject, team);
         }
 
@@ -772,6 +772,9 @@ internal class PlayerManager {
         textMeshObject.alignment = TextAlignmentOptions.Center;
         textMeshObject.font = HkmpFontManager.InGameNameFont;
         textMeshObject.fontSize = 22;
+        // Long names (Steam profile names) must stay on one line instead of wrapping inside the default 20x5 rect
+        textMeshObject.enableWordWrapping = false;
+        textMeshObject.overflowMode = TextOverflowModes.Overflow;
         textMeshObject.outlineWidth = 0.2f;
         textMeshObject.outlineColor = Color.black;
 

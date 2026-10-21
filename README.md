@@ -12,7 +12,7 @@ Built on [HKMP](https://github.com/Extremelyd1/HKMP) · Hollow Knight 1.5.12459 
 ![Unity](https://img.shields.io/badge/Unity-6000.0.61-222C37?style=flat&logo=unity&logoColor=white)
 ![.NET](https://img.shields.io/badge/.NET-8-512BD4?style=flat&logo=dotnet&logoColor=white)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-0078D4?style=flat&logo=windows&logoColor=white)
-![Version](https://img.shields.io/badge/version-1.2.0-C6613F?style=flat)
+![Version](https://img.shields.io/badge/version-1.2.1-C6613F?style=flat)
 ![License](https://img.shields.io/badge/license-LGPL--2.1-blue?style=flat)
 
 ![Installer](docs/screenshots/installer-welcome.png)
@@ -39,14 +39,17 @@ Built on [HKMP](https://github.com/Extremelyd1/HKMP) · Hollow Knight 1.5.12459 
 
 ## Features
 
-- **Synced enemies.** If one player hits or kills an enemy, the other sees it. Health, soul, equipped charms, grubs and tarros are per player; world progress (doors, dead enemies, defeated bosses) is shared.
+- **Synced enemies.** If one player hits or kills an enemy, the other sees it. Grubs are shared between players. Health, soul, equipped charms and tarros are per player; world progress (doors, dead enemies, defeated bosses) is shared.
+- **Enemies chase the nearest player.** Enemies target and attack the closest player, host or not, and only switch targets when another player is clearly closer (hysteresis). Controlled by `EnemiesTargetNearestPlayer` (on by default).
+- **Steam names above characters.** Your Steam name is shown over your character (option *Steam Name* in the mod menu, on by default). Spaces become `_` and names are capped at 20 characters.
+- **Skin kept between sessions.** Your chosen skin is saved and applied automatically when you connect.
 - **Enemy health scales with players.** Enemies get more health as players connect (`EnemyHealthPercentPerExtraPlayer`, default 50: x1.5 with two players; `0` disables it). It is implemented by dividing the damage they receive.
 - **Join by code over Steam.** The host shares a short code (`XXXX-XXXX`); friends join through Steam's relay network. No port forwarding, no VPN. Optional password.
 - **MSI installer that also updates.** Run a newer MSI over an old one to update. Uninstall from *Apps* or the Start menu; the original game files are restored.
 - **Coexists with other mods.** It only adds `Managed\Mods\Asyncronus`; other mods and your saves are never touched.
 - **No game files in this repository.** The installer applies a binary patch to *your* `Assembly-CSharp.dll` after verifying its hash.
 - **Classic IP + port** (UDP 26950) is still available as a fallback.
-- **Teleport.** A TP button in the pause menu and the `/tp [name]` command. Controlled by the server setting `AllowTeleport` (on by default).
+- **Teleport.** A TP button in the pause menu and the `/tp [name]` command. Controlled by the server setting `AllowTeleport` (on by default). It uses the game's own respawn, so the screen and controls are always restored.
 - **Arena and wave doors wait for everyone.** They only close once *all* players in the scene have entered (`ArenaWaitForAllPlayers`, on by default).
 - **Rotating save backups.** Before applying the host's state, the mod keeps three rotating backups of each `user*.dat` (`user1.dat.hkmp-backup-*`), and all save writes are atomic.
 - **Copy code button** for the join code.
@@ -68,7 +71,7 @@ The installer UI is currently in Spanish.
 
 Everyone who plays together must use the **same version**.
 
-> **1.2.0 changes the network protocol.** Players on other versions cannot join each other. Update everyone to 1.2.0 together.
+> **1.2.1 changes the network protocol compared with 1.1.x and 1.2.0.** Players on other versions cannot join each other. Update everyone to 1.2.1 together.
 
 ### Requirements
 
@@ -96,7 +99,7 @@ Use **Uninstall Asyncronus** in the Start menu, or Settings → Apps. The origin
 
 Asyncronus works on Linux through Steam with **Proton** (recommended: Proton 9+ or Experimental; Steam Deck included) or the native Linux build.
 
-> **Status: not tested on a real Linux machine yet.** The installer was verified end to end on Windows (patch, hook generation, install, uninstall, byte-identical restore). Nothing has been run inside Hollow Knight on Linux.
+> **Status: not tested on a real Linux machine yet.** The installer was verified end to end on Windows (patch, hook generation, install, uninstall, byte-identical restore). Nothing has been run inside Hollow Knight on Linux. Version 1.2.1 fixes the Linux package: its scripts had Windows (CRLF) line endings and would not start, so run them with `bash`.
 
 **Requirements:** Hollow Knight 1.5.12459 on Steam (*Betas: None*), Steam installed and logged in, a .NET 8+ runtime or SDK (only needed while installing), `bash`, `sha256sum` and `tar`.
 
@@ -105,7 +108,9 @@ Asyncronus works on Linux through Steam with **Proton** (recommended: Proton 9+ 
 ```bash
 tar xzf Asyncronus-linux-*.tar.gz
 cd Asyncronus-linux-*/
-./install.sh      # add --game-dir "/path/to/Hollow Knight" if it is not found
+bash install.sh      # add --game-dir "/path/to/Hollow Knight" if it is not found
+bash install.sh --verbose    # more detail in the install log
+bash install.sh --diagnose   # print diagnostics for a bug report
 ```
 
 The installer checks the hash of `Assembly-CSharp.dll` before changing anything. If it does not match the Windows build (for example, on the native Linux build), it stops and asks you to use Proton. It backs up the originals and reverts on failure.
@@ -114,7 +119,7 @@ The installer checks the hash of `Assembly-CSharp.dll` before changing anything.
 
 **Host and join:** the same as on Windows, with Steam open and logged in on both sides and the same mod version.
 
-**Uninstall:** `./uninstall.sh` restores the original `Assembly-CSharp.dll` and removes the added files. It does not touch other mods or your saves.
+**Uninstall:** `bash uninstall.sh` restores the original `Assembly-CSharp.dll` and removes the added files. It does not touch other mods or your saves.
 
 **Troubleshooting:**
 - *Game not found:* pass `--game-dir`. Flatpak Steam needs access to libraries outside your home.
@@ -122,6 +127,7 @@ The installer checks the hash of `Assembly-CSharp.dll` before changing anything.
 - *Version mismatch:* verify integrity of game files and set Betas to *None*. On the native build, force Proton.
 - *No Start Multiplayer:* check `ModLog.txt` for `Modding API: 0.0.0.0-77` and the Asyncronus mod.
 - *Copy-code button does nothing:* Unity's clipboard needs X11 or XWayland. Type the code by hand.
+- *Reporting a problem:* run `bash install.sh --diagnose` and send its output, the install log (`~/.local/state/asyncronus-install.log`) and your `ModLog.txt`.
 
 Full guide (install options, file locations, error logs, technical notes): [docs/LINUX.md](docs/LINUX.md).
 
@@ -133,10 +139,11 @@ Full guide (install options, file locations, error logs, technical notes): [docs
 
 Server rules (PvP, damage, names) live in the server settings; `FullSynchronisation` must stay `true` for enemy sync.
 
-New server settings in 1.2.0:
+Server settings added in 1.2.0 and 1.2.1:
 - `AllowTeleport` (default on): enables the TP button and `/tp [name]`.
 - `EnemyHealthPercentPerExtraPlayer` (default 50, `0` disables): scales enemy health with connected players.
 - `ArenaWaitForAllPlayers` (default on): arena and wave doors close only after every player in the scene has entered.
+- `EnemiesTargetNearestPlayer` (default on): enemies chase and attack the nearest player, host or not.
 
 ## How it works
 
@@ -200,7 +207,8 @@ dotnet test tests/HKMP.SteamBridge.Tests
 - Enemies with no saved state respawn when re-entering an empty room, as in the base game.
 - Abilities and maps are per player (HKMP design).
 - Banning by IP is not useful for bridged players: they all arrive from `127.0.0.1`. Ban by key instead.
-- Teleport between scenes uses the `dreamGate` entrance, which has not been verified.
+- Teleport to bosses, arenas and Godhome has not been verified.
+- Enemy targeting (`EnemiesTargetNearestPlayer`) does not cover bosses, arenas or homing projectiles, which can still go to the host.
 - Waiting for all players before closing doors (`ArenaWaitForAllPlayers`) does not cover the Colosseum or bosses that start when hit.
 - Linux support has not been tested on a real Linux machine. See [docs/LINUX.md](docs/LINUX.md#not-verified).
 

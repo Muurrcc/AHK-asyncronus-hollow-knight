@@ -6543,9 +6543,10 @@
         },
         "grubsCollected": {
             "Sync": true,
-            "SyncType": "Player",
-            "IgnoreSceneHost": true,
-            "VarType": "System.Int32"
+            "SyncType": "Server",
+            "IgnoreSceneHost": false,
+            "VarType": "System.Int32",
+            "Additive": true
         },
         "grubRewards": {
             "Sync": true,
@@ -7041,9 +7042,10 @@
         },
         "scenesGrubRescued": {
             "Sync": true,
-            "SyncType": "Player",
-            "IgnoreSceneHost": true,
-            "VarType": "System.Collections.Generic.List`1[System.String]"
+            "SyncType": "Server",
+            "IgnoreSceneHost": false,
+            "VarType": "System.Collections.Generic.List`1[System.String]",
+            "Additive": true
         },
         "scenesFlameCollected": {
             "Sync": true,
@@ -10882,8 +10884,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -12191,8 +12192,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -13330,8 +13330,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -14104,8 +14103,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -14135,8 +14133,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -14217,8 +14214,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -14798,8 +14794,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -14944,8 +14939,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -15035,8 +15029,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -15520,8 +15513,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -15541,8 +15533,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -15753,8 +15744,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -16128,8 +16118,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -16404,8 +16393,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -17136,8 +17124,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -17610,8 +17597,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -18617,8 +18603,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -18818,8 +18803,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -18849,8 +18833,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -19377,8 +19360,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -20008,8 +19990,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -20389,8 +20370,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -21918,8 +21898,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -22100,8 +22079,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -22910,8 +22888,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -23112,8 +23089,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -23133,8 +23109,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -23457,8 +23432,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -23732,8 +23706,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -24046,8 +24019,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -24281,8 +24253,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -24980,8 +24951,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -25255,8 +25225,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -26501,8 +26470,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -26573,8 +26541,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -26904,8 +26871,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -26987,8 +26953,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -27439,8 +27404,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -28610,8 +28574,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -28722,8 +28685,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -30235,8 +30197,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -30316,8 +30277,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -31161,8 +31121,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -31938,8 +31897,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -32122,8 +32080,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -32133,8 +32090,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -32144,8 +32100,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
@@ -32155,8 +32110,7 @@
             },
             "Value": {
                 "Sync": true,
-                "SyncType": "Player",
-                "IgnoreSceneHost": true
+                "SyncType": "Server"
             }
         },
         {
