@@ -62,6 +62,12 @@ internal static class DevAutoConnect {
         // Shared progress test: masks, soul vessels, spells, story (no-op without -hkmp-test-shared)
         DevSharedProgressTest.TryStart(netClient);
 
+        // Dream scenes and dream bosses test (no-op without -hkmp-test-dream)
+        DevDreamTest.TryStart(netClient);
+
+        // Ability gates on join + client->scene host damage sweep (no-op without -hkmp-test-dmg)
+        DevDamageTest.TryStart(uiManager, netClient);
+
         var openMenu = HasFlag("-hkmp-menu") || Environment.GetEnvironmentVariable("HKMP_MENU") == "1";
         var connect = GetOption("-hkmp-connect") ?? Environment.GetEnvironmentVariable("HKMP_CONNECT");
         var username = GetOption("-hkmp-name") ?? Environment.GetEnvironmentVariable("HKMP_NAME");

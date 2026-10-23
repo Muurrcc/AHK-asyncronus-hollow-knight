@@ -189,12 +189,46 @@ internal static class SharedProgressRules {
     ];
 
     /// <summary>
+    /// Dream warriors (Xero, Gorb, Elder Hu, Marmu, No Eyes, Markoth, Galien): 0 = not defeated, 1 = defeated (the
+    /// wounded ghost waits to be dream nailed), 2 = essence collected (the ghost is gone). The fight runs on the scene
+    /// host, but 2 is set by the local ghost NPC of whoever dream nails it, so it must not depend on being scene
+    /// host; otherwise the defeated warrior came back for everybody else.
+    /// </summary>
+    public static readonly string[] DreamWarriorFields = [
+        "xeroDefeated", "aladarSlugDefeated", "elderHuDefeated", "mumCaterpillarDefeated", "noEyesDefeated",
+        "markothDefeated", "galienDefeated"
+    ];
+
+    /// <summary>
+    /// Dream bosses defeated inside their dream (Failed Champion, Soul Tyrant, Lost Kin, White Defender, Grey Prince
+    /// Zote) and the map pins of the dream warriors. Set by whoever is in the dream / near the ghost, which is not
+    /// necessarily the scene host of that scene name, so they must not depend on being scene host either.
+    /// </summary>
+    public static readonly string[] DreamBossFields = [
+        "falseKnightDreamDefeated", "mageLordDreamDefeated", "infectedKnightDreamDefeated", "whiteDefenderDefeated",
+        "greyPrinceDefeated",
+        "xeroPinned", "aladarPinned", "huPinned", "mumCaterpillarPinned", "noEyesPinned", "markothPinned",
+        "galienPinned"
+    ];
+
+    /// <summary>
     /// Every PlayerData field that the upstream mapping stored per player and that is now shared progress
-    /// (<c>SyncType.Server</c>). Forced to Server by <see cref="SaveDataMapping"/> on load.
+    /// (<c>SyncType.Server</c>), plus the dream boss progress that was shared but only accepted from the scene host.
+    /// Forced to Server (and not requiring the scene host) by <see cref="SaveDataMapping"/> on load.
     /// </summary>
     public static readonly HashSet<string> SharedProgressFields = [
         ..MaskFields, ..SoulVesselFields, ..SpellFields, ..AbilityFields, ..KeyItemFields, ..MapAndZoneFields,
-        ..StoryFields
+        ..StoryFields, ..DreamWarriorFields, ..DreamBossFields
+    ];
+
+    /// <summary>
+    /// Shared booleans that never go back to false in a playthrough (a defeated dream boss stays defeated). The
+    /// server ignores (and corrects) an update that would turn them off, e.g. from a player whose data is out of
+    /// date; otherwise the boss would show up again.
+    /// </summary>
+    public static readonly HashSet<string> MonotonicBoolFields = [
+        "falseKnightDreamDefeated", "mageLordDreamDefeated", "infectedKnightDreamDefeated", "whiteDefenderDefeated",
+        "greyPrinceDefeated"
     ];
 
     /// <summary>
@@ -208,7 +242,7 @@ internal static class SharedProgressRules {
     /// that would lower them, e.g. from a player whose data is out of date.
     /// </summary>
     public static readonly HashSet<string> MonotonicIntFields = [
-        "maxHealthBase", "MPReserveMax", "fireballLevel", "quakeLevel", "screamLevel"
+        "maxHealthBase", "MPReserveMax", "fireballLevel", "quakeLevel", "screamLevel", ..DreamWarriorFields
     ];
 
     /// <summary>
@@ -294,6 +328,12 @@ internal static class SharedProgressRules {
     /// </summary>
     public static bool IsRegression(string name, int storedValue, int incomingValue) =>
         MonotonicIntFields.Contains(name) && incomingValue < storedValue;
+
+    /// <summary>
+    /// Whether an incoming value for a shared flag would turn off a flag that never goes back to false.
+    /// </summary>
+    public static bool IsRegression(string name, bool storedValue, bool incomingValue) =>
+        MonotonicBoolFields.Contains(name) && storedValue && !incomingValue;
 
     /// <summary>
     /// The health of the local character after its max health changed because another player obtained (or the

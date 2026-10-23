@@ -80,10 +80,13 @@ internal class SaveChanges {
     public void ApplyPlayerDataSaveChange(string name) {
         Logger.Debug($"ApplyPlayerData for name: {name}");
 
-        // If we receive the dash from a save update, we need to also set the 'canDash' boolean to ensure that
-        // the input for dashing is accepted
-        if (name == "hasDash") {
-            PlayerData.instance.SetBool("canDash", true);
+        // Abilities with a gate flag (hasDash -> canDash): the HeroController only checks 'canDash', so the gate
+        // must follow the received value. It used to be set to true for ANY received 'hasDash', also false: the
+        // full world state sent when joining contains hasDash=false, so every client could dash from the start.
+        if (AbilityGateRules.TryGetGate(name, out var gateName)) {
+            var gate = AbilityGateRules.GateAfterAbilityUpdate(PlayerData.instance.GetBoolInternal(name));
+            PlayerData.instance.SetBoolInternal(gateName, gate);
+            Logger.Info($"Ability gate {gateName} = {gate} after save update of {name}");
             return;
         }
         

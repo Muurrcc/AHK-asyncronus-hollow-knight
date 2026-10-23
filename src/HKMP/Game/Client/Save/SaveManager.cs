@@ -242,6 +242,8 @@ internal class SaveManager {
     private void OnSceneChanged(Scene oldScene, Scene newScene) {
         _persistentFsmData.Clear();
 
+        RepairAbilityGates();
+
         foreach (var geoRock in Object.FindObjectsOfType<GeoRock>()) {
             var geoRockObject = geoRock.gameObject;
 
@@ -734,6 +736,30 @@ internal class SaveManager {
             var value = keyValuePair.Value;
 
             UpdateSaveWithData(index, value);
+        }
+
+        RepairAbilityGates();
+    }
+
+    /// <summary>
+    /// Close ability gate flags (canDash, ...) that are open while nobody unlocked the ability (see
+    /// <see cref="AbilityGateRules"/>). Older versions opened canDash on any received hasDash, also false, and the
+    /// local save kept it. Never takes away an unlocked ability.
+    /// </summary>
+    private static void RepairAbilityGates() {
+        var pd = PlayerData.instance;
+        if (pd == null) {
+            return;
+        }
+
+        foreach (var pair in AbilityGateRules.GateByAbility) {
+            var hasAbility = pd.GetBoolInternal(pair.Key);
+            var gate = pd.GetBoolInternal(pair.Value);
+            var repaired = AbilityGateRules.RepairGate(hasAbility, gate);
+            if (repaired != gate) {
+                Logger.Info($"Closing ability gate {pair.Value} ({pair.Key} is false)");
+                pd.SetBoolInternal(pair.Value, repaired);
+            }
         }
     }
 

@@ -1855,6 +1855,18 @@ internal abstract class ServerManager : IServerManager {
                 return;
             }
 
+            // Shared flags that never turn off (a defeated dream boss): same correction
+            if (!varProps.Additive && pdVarName != null &&
+                SharedProgressRules.MonotonicBoolFields.Contains(pdVarName) &&
+                ServerSaveData.GlobalSaveData.TryGetValue(packet.SaveDataIndex, out var storedFlag) &&
+                EncodeUtil.DecodeSaveDataValue(pdVarName, storedFlag) is bool storedBool &&
+                EncodeUtil.DecodeSaveDataValue(pdVarName, packet.Value) is bool incomingBool &&
+                SharedProgressRules.IsRegression(pdVarName, storedBool, incomingBool)) {
+                Logger.Info($"  Ignoring {pdVarName} turning off, correcting sender");
+                _netServer.GetUpdateManagerForClient(id)?.SetSaveUpdate(packet.SaveDataIndex, storedFlag);
+                return;
+            }
+
             if (varProps.Additive) {
                 if (pdVarName == null) {
                     Logger.Debug("  Cannot decode value, name for variable is null");

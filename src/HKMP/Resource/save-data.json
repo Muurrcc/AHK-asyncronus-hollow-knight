@@ -6575,7 +6575,7 @@
         "falseKnightDreamDefeated": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "falseKnightOrbsCollected": {
@@ -6635,7 +6635,7 @@
         "mageLordDreamDefeated": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mageLordOrbsCollected": {
@@ -6647,7 +6647,7 @@
         "infectedKnightDreamDefeated": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "infectedKnightOrbsCollected": {
@@ -6659,7 +6659,7 @@
         "whiteDefenderDefeated": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "whiteDefenderOrbsCollected": {
@@ -6685,7 +6685,7 @@
         "greyPrinceDefeated": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "greyPrinceOrbsCollected": {
@@ -6697,43 +6697,43 @@
         "aladarSlugDefeated": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "xeroDefeated": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "elderHuDefeated": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "mumCaterpillarDefeated": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "noEyesDefeated": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "markothDefeated": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "galienDefeated": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Int32"
         },
         "XERO_encountered": {
@@ -6781,43 +6781,43 @@
         "xeroPinned": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "aladarPinned": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "huPinned": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "mumCaterpillarPinned": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "noEyesPinned": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "markothPinned": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "galienPinned": {
             "Sync": true,
             "SyncType": "Server",
-            "IgnoreSceneHost": false,
+            "IgnoreSceneHost": true,
             "VarType": "System.Boolean"
         },
         "visitedCrossroads": {

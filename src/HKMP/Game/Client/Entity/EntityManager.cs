@@ -109,6 +109,7 @@ internal class EntityManager {
     /// </summary>
     public void Initialize() {
         EntityProcessor.Initialize(_entities, _netClient);
+        AwakenChildrenTracker.Initialize();
     }
 
     /// <summary>
@@ -665,14 +666,28 @@ internal class EntityManager {
             .Where(hm => hm != null && hm.gameObject.scene == scene)
             .ToList();
 
+        // An enemy whose descendant is a networked entity (e.g. the Entombed Husks of RestingGrounds_10 carry a
+        // 'Dream Gate Set Lock' battle gate) must still be registered itself: it used to be skipped, so it stayed a
+        // local object on every instance and hits of scene clients never reached the scene host (see
+        // GenericEnemyRules). The managed descendant keeps its own entity; the client copy of the enemy drops it
+        // (Entity.DestroyManagedChildren).
         var candidates = healthManagers
             .Select(hm => hm.gameObject)
-            .Where(go => !IsManagedOrUnderManaged(go.transform))
-            .Where(go => !go.GetComponentsInChildren<Transform>(true).Any(t => managedObjects.Contains(t.gameObject)))
+            .Select(go => (
+                Go: go,
+                Path: GetPath(go.transform),
+                Decision: GenericEnemyRules.Decide(
+                    true,
+                    IsManagedOrUnderManaged(go.transform),
+                    go.GetComponentsInChildren<Transform>(true).Any(t => managedObjects.Contains(t.gameObject))
+                )
+            ))
+            .Where(c => c.Decision == GenericEnemyRules.Decision.Register)
             // Sort for a deterministic ID assignment between clients
-            .OrderBy(go => GetPath(go.transform), StringComparer.Ordinal)
-            .ThenBy(go => go.transform.position.x)
-            .ThenBy(go => go.transform.position.y)
+            .OrderBy(c => c.Path, StringComparer.Ordinal)
+            .ThenBy(c => c.Go.transform.position.x)
+            .ThenBy(c => c.Go.transform.position.y)
+            .Select(c => c.Go)
             .ToList();
 
         var registered = 0;
@@ -680,6 +695,15 @@ internal class EntityManager {
             // Skip candidates that were already handled as part of a previous generic candidate
             if (IsManagedOrUnderManaged(go.transform)) {
                 continue;
+            }
+
+            var managedDescendants = go.GetComponentsInChildren<Transform>(true)
+                .Where(t => t.gameObject != go && managedObjects.Contains(t.gameObject))
+                .Select(t => t.name)
+                .ToList();
+            if (managedDescendants.Count > 0) {
+                Logger.Info(
+                    $"HKMP_GENERIC '{GetPath(go.transform)}' contains networked entities ({string.Join(", ", managedDescendants)}), registering it as well");
             }
 
             var processor = new EntityProcessor {

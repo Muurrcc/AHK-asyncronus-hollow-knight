@@ -159,10 +159,14 @@ internal class Entity {
 
         SyncPersistentBoolId();
 
-        // Store whether the host object was active and set it not active until we know if we are scene host
-        _originalIsActive = Object.Host.activeSelf;
+        // Store whether the host object was active and set it not active until we know if we are scene host.
+        // Objects that an AwakenChildren component only woke up temporarily (e.g. the dream warriors) count as
+        // inactive, as the scene defines them; otherwise they would stay active for good (see
+        // EntityActivationRules).
+        var original = AwakenChildrenTracker.OriginalActive(Object.Host);
+        _originalIsActive = original.ActiveSelf;
 
-        _lastIsActive = _hasParent ? Object.Host.activeSelf : Object.Host.activeInHierarchy;
+        _lastIsActive = _hasParent ? original.ActiveSelf : original.ActiveInHierarchy;
 
         Logger.Info(
             $"Entity '{Object.Host.name}' was original active: {_originalIsActive}, last active: {_lastIsActive}");
