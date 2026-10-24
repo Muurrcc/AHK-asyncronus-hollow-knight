@@ -12,7 +12,7 @@ Built on [HKMP](https://github.com/Extremelyd1/HKMP) · Hollow Knight 1.5.12459 
 ![Unity](https://img.shields.io/badge/Unity-6000.0.61-222C37?style=flat&logo=unity&logoColor=white)
 ![.NET](https://img.shields.io/badge/.NET-8-512BD4?style=flat&logo=dotnet&logoColor=white)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-0078D4?style=flat&logo=windows&logoColor=white)
-![Version](https://img.shields.io/badge/version-1.2.2-C6613F?style=flat)
+![Version](https://img.shields.io/badge/version-1.2.3-C6613F?style=flat)
 ![License](https://img.shields.io/badge/license-LGPL--2.1-blue?style=flat)
 
 ![Installer](docs/screenshots/installer-welcome.png)
@@ -40,7 +40,7 @@ Built on [HKMP](https://github.com/Extremelyd1/HKMP) · Hollow Knight 1.5.12459 
 ## Features
 
 - **Synced enemies.** If one player hits or kills an enemy, the other sees it. Grubs are shared live: a jar broken by one player breaks in the other's game, and the counters are shared too. Health, soul, geo, position, equipped charms and the items you already had stay individual; world state (doors, dead enemies, defeated bosses) is shared.
-- **Shared progress.** What one player obtains, everyone gets: masks and soul vessels, spells and their levels, movement abilities, Dream Nail, nail arts, King's Brand and key items, and story progress (NPC dialogue, maps, visited zones, Godhome). Receiving a mask does not heal you. When you join, your earlier progress is merged in and the higher value wins.
+- **Shared progress.** What one player obtains, everyone gets: masks and soul vessels, spells and their levels, movement abilities, Dream Nail, nail arts, King's Brand and key items, and story progress (NPC dialogue, maps, visited zones, Godhome, defeated dream warriors and dream bosses). Receiving a mask does not heal you. When you join, your earlier progress is merged in and the higher value wins.
 - **Enemies chase the nearest player.** Enemies target and attack the closest player, host or not, and only switch targets when another player is clearly closer (hysteresis). Controlled by `EnemiesTargetNearestPlayer` (on by default).
 - **Steam names above characters.** Your Steam name is shown over your character (option *Steam Name* in the mod menu, on by default). Spaces become `_` and names are capped at 20 characters.
 - **Skin kept between sessions.** Your chosen skin is saved and applied automatically when you connect.
@@ -72,7 +72,7 @@ The installer UI is currently in Spanish.
 
 Everyone who plays together must use the **same version**.
 
-> **1.2.2 changes the network protocol and the save data compared with 1.2.1 and earlier.** Players on other versions cannot join each other. All players and the server must use 1.2.2. If you use the standalone HKMPServer, update it too: it embeds the save data.
+> **All players and the server must use 1.2.3.** 1.2.3 changes the shared save data rules compared with 1.2.2 (dream bosses), and 1.2.2 changed the network protocol compared with 1.2.1 and earlier. Mixing versions leaves those fixes broken or prevents joining. If you use the standalone HKMPServer, update it too: it embeds the save data.
 
 ### Requirements
 
